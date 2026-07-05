@@ -29,8 +29,8 @@
   "projected_ir_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
   "reachability_result_hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
   "reachable_after_projection": [
-    "client",
     "api-b",
+    "client",
     "database"
   ],
   "roots": [
