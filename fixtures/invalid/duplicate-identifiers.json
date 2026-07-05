@@ -1,0 +1,22 @@
+{
+  "schema_version": "dependency-algebra.topology.v1",
+  "topology_id": "duplicate-identifiers",
+  "components": [
+    { "id": "client" },
+    { "id": "client" },
+    { "id": "api" }
+  ],
+  "edges": [
+    { "id": "client-api", "from": "client", "to": "api" },
+    { "id": "client-api", "from": "api", "to": "client" }
+  ],
+  "workloads": [
+    {
+      "id": "serve-api",
+      "roots": ["client"],
+      "target": "api",
+      "candidate_set": ["client"],
+      "expected_classification": "VALID"
+    }
+  ]
+}
