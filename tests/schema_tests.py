@@ -26,6 +26,7 @@ SCHEMA_PATHS = [
     SCHEMAS / "ir.schema.json",
     SCHEMAS / "diagnostic.schema.json",
     SCHEMAS / "reachability.schema.json",
+    SCHEMAS / "dependency.schema.json",
 ]
 TOPOLOGY_SCHEMA_PATH = SCHEMAS / "topology.schema.json"
 CLASSIFICATION_SCHEMA_PATH = SCHEMAS / "classification.schema.json"
@@ -33,6 +34,7 @@ AST_SCHEMA_PATH = SCHEMAS / "ast.schema.json"
 IR_SCHEMA_PATH = SCHEMAS / "ir.schema.json"
 DIAGNOSTIC_SCHEMA_PATH = SCHEMAS / "diagnostic.schema.json"
 REACHABILITY_SCHEMA_PATH = SCHEMAS / "reachability.schema.json"
+DEPENDENCY_SCHEMA_PATH = SCHEMAS / "dependency.schema.json"
 
 
 def load_json(path: Path):
@@ -558,6 +560,131 @@ class ReachabilitySchemaContractTests(unittest.TestCase):
         schema_text = json.dumps(load_json(REACHABILITY_SCHEMA_PATH)).lower()
         fixture_text = "\n".join(path.read_text(encoding="utf-8").lower() for path in (FIXTURES / "reachability").glob("*.json"))
         for term in self.FORBIDDEN_REACHABILITY_TERMS:
+            with self.subTest(term=term):
+                self.assertNotIn(term, schema_text)
+                self.assertNotIn(term, fixture_text)
+
+
+@unittest.skipIf(Draft202012Validator is None, "jsonschema is not installed")
+class DependencyPredicateSchemaContractTests(unittest.TestCase):
+    FORBIDDEN_DEPENDENCY_TERMS = {
+        "absolute_path",
+        "timestamp",
+        "environment",
+        "random",
+        "authorization",
+        "authority",
+        "proof",
+        "governance",
+        "policy",
+        "execution",
+        "mutation",
+        "continuityos",
+        "unknown",
+    }
+    VALID_FIXTURES = {
+        "bridge-dependency.json",
+        "dependency-false.json",
+        "dependency-hash.json",
+        "dependency-true.json",
+        "multiple-candidate-dependency.json",
+        "redundant-topology.json",
+        "root-dependency.json",
+        "target-dependency.json",
+    }
+    INVALID_FIXTURES = {
+        "invalid-projected-ir-rejection.json",
+        "invalid-reachability-result-rejection.json",
+    }
+
+    def canonical_dependency_bytes(self, doc):
+        """Contract helper for fixture comparison only.
+
+        This is not a predicate evaluator or compiler implementation. It only
+        applies the documented dependency_result_hash boundary to static
+        dependency-result fixtures.
+        """
+        payload = dict(doc)
+        payload.pop("dependency_result_hash", None)
+        return json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+
+    def diagnostic_sort_key(self, diagnostic):
+        subject = diagnostic["subject"]
+        return (diagnostic["code"], diagnostic["severity"], subject["kind"], subject["id"])
+
+    def assert_dependency_ordering(self, doc):
+        self.assertEqual(doc["roots"], sorted(set(doc["roots"])))
+        self.assertEqual(doc["candidate_set"], sorted(set(doc["candidate_set"])))
+        self.assertEqual(doc["reachable_after_projection"], sorted(set(doc["reachable_after_projection"])))
+        self.assertEqual(doc["diagnostics"], sorted(doc["diagnostics"], key=self.diagnostic_sort_key))
+
+    def test_dependency_schema_validates(self):
+        Draft202012Validator.check_schema(load_json(DEPENDENCY_SCHEMA_PATH))
+
+    def test_dependency_fixtures_validate(self):
+        validator = json_schema_validator(DEPENDENCY_SCHEMA_PATH)
+        for path in sorted((FIXTURES / "dependency").glob("*.json")):
+            if path.name in self.INVALID_FIXTURES:
+                continue
+            with self.subTest(path=path):
+                doc = load_json(path)
+                validator.validate(doc)
+                self.assert_dependency_ordering(doc)
+
+    def test_required_dependency_vectors_exist(self):
+        actual = {path.name for path in (FIXTURES / "dependency").glob("*.json")}
+        self.assertEqual(actual, self.VALID_FIXTURES | self.INVALID_FIXTURES)
+
+    def test_predicate_truth_table_matches_fixtures(self):
+        for path in sorted((FIXTURES / "dependency").glob("*.json")):
+            if path.name in self.INVALID_FIXTURES:
+                continue
+            with self.subTest(path=path):
+                doc = load_json(path)
+                if doc["reachable_after_projection"] == []:
+                    self.assertTrue(doc["dependency"])
+                    self.assertEqual(doc["dependency_reason"], "no_structurally_valid_path_after_projection")
+                    self.assertIn("DEPENDENCY.EMPTY_REACHABILITY", [d["code"] for d in doc["diagnostics"]])
+                else:
+                    self.assertFalse(doc["dependency"])
+                    self.assertEqual(doc["dependency_reason"], "structurally_valid_path_remaining_after_projection")
+                    self.assertIn("DEPENDENCY.REACHABILITY_REMAINING", [d["code"] for d in doc["diagnostics"]])
+
+    def test_dependency_equality_is_deterministic_and_candidate_order_insensitive(self):
+        import hashlib
+
+        doc = load_json(FIXTURES / "dependency" / "multiple-candidate-dependency.json")
+        reordered = dict(doc)
+        reordered["candidate_set"] = list(reversed(doc["candidate_set"]))
+        reordered["candidate_set"] = sorted(set(reordered["candidate_set"]))
+        reordered.pop("dependency_result_hash")
+        reordered["dependency_result_hash"] = "sha256:" + hashlib.sha256(self.canonical_dependency_bytes(reordered)).hexdigest()
+        self.assertEqual(reordered, doc)
+
+    def test_dependency_result_hash_matches_canonical_fixture(self):
+        import hashlib
+
+        doc = load_json(FIXTURES / "dependency" / "dependency-hash.json")
+        self.assertFalse(self.canonical_dependency_bytes(doc).endswith(b"\n"))
+        self.assertEqual(
+            "sha256:" + hashlib.sha256(self.canonical_dependency_bytes(doc)).hexdigest(),
+            doc["dependency_result_hash"],
+        )
+
+    def test_invalid_projected_ir_is_rejected(self):
+        validator = json_schema_validator(DEPENDENCY_SCHEMA_PATH)
+        with self.assertRaises(ValidationError):
+            validator.validate(load_json(FIXTURES / "dependency" / "invalid-projected-ir-rejection.json"))
+
+    def test_invalid_reachability_result_is_rejected(self):
+        validator = json_schema_validator(DEPENDENCY_SCHEMA_PATH)
+        with self.assertRaises(ValidationError):
+            validator.validate(load_json(FIXTURES / "dependency" / "invalid-reachability-result-rejection.json"))
+
+    def test_forbidden_runtime_authority_governance_proof_fields_remain_excluded(self):
+        schema_text = json.dumps(load_json(DEPENDENCY_SCHEMA_PATH)).lower()
+        fixture_text = "\n".join(path.read_text(encoding="utf-8").lower() for path in (FIXTURES / "dependency").glob("*.json"))
+        for term in self.FORBIDDEN_DEPENDENCY_TERMS:
             with self.subTest(term=term):
                 self.assertNotIn(term, schema_text)
                 self.assertNotIn(term, fixture_text)

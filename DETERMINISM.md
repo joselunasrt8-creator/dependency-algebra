@@ -32,3 +32,9 @@ Hash-participating IR fields are the normalized structural fields: schema versio
 ## Milestone 1 test reflection
 
 Milestone 1 does not emit compiler artifacts. Its determinism tests are therefore limited to schema-level guarantees that can be checked without implementing a compiler: canonical JSON key ordering is stable for fixture inputs, fixture diagnostics are ordered deterministically by the semantic validator, artifact hashes are constrained to explicit SHA-256 strings, and volatile fields such as wall-clock generation timestamps are rejected by the artifact schema.
+
+## Dependency predicate determinism
+
+Dependency predicate results are deterministic structural result objects. The identity boundary is the normalized IR, candidate set, projected IR, and reachability result over that projected IR. Set-like fields are canonically ordered before hashing, and input ordering differences must not change dependency identity.
+
+`dependency_result_hash` is the SHA-256 digest of canonical UTF-8 JSON for the dependency result after removing only `dependency_result_hash`. Canonical JSON uses lexicographically sorted object keys and compact separators. Runtime state, authority fields, governance fields, proof fields, execution fields, timestamps, local paths, random identifiers, and external-state values are excluded from the schema and therefore excluded from the hash boundary.

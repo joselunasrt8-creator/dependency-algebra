@@ -1,0 +1,28 @@
+{
+  "candidate_set": [
+    "api"
+  ],
+  "dependency": true,
+  "dependency_reason": "invalid fixture",
+  "diagnostics": [
+    {
+      "code": "DEPENDENCY.INVALID_INPUT",
+      "message": "projected IR identity is invalid",
+      "severity": "error",
+      "subject": {
+        "id": "checkout",
+        "kind": "workload"
+      }
+    }
+  ],
+  "normalized_ir_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "projected_ir_hash": "not-a-sha",
+  "reachability_result_hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+  "reachable_after_projection": [],
+  "roots": [
+    "client"
+  ],
+  "schema_version": "dependency-algebra.dependency.v1",
+  "target": "database",
+  "workload_id": "checkout"
+}

@@ -81,9 +81,11 @@ The implemented surface is intentionally schema-only:
 - `SPEC.md`
 - `BOUNDARY.md`
 - `DETERMINISM.md`
+- `DEPENDENCY_PREDICATE_CONTRACT.md`
 - JSON schemas under `schemas/`
 - canonical fixtures under `fixtures/`
 - schema and boundary conformance tests under `tests/`
+- dependency predicate result schema and fixtures
 
 No compiler engine, CLI, GitHub Action, ContinuityOS integration, proof system, authority module, runtime hook, or execution surface is included in this milestone.
 

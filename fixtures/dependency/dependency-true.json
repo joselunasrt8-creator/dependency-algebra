@@ -1,0 +1,38 @@
+{
+  "candidate_set": [
+    "api"
+  ],
+  "dependency": true,
+  "dependency_reason": "no_structurally_valid_path_after_projection",
+  "dependency_result_hash": "sha256:ea05b6908f1d03b8db44c2ea1cb39f81d47ddd9c93123f673f1f6e25666d20e5",
+  "diagnostics": [
+    {
+      "code": "DEPENDENCY.TRUE",
+      "message": "candidate set is a structural dependency",
+      "severity": "info",
+      "subject": {
+        "id": "checkout",
+        "kind": "workload"
+      }
+    },
+    {
+      "code": "DEPENDENCY.EMPTY_REACHABILITY",
+      "message": "projected reachability is empty",
+      "severity": "info",
+      "subject": {
+        "id": "checkout",
+        "kind": "workload"
+      }
+    }
+  ],
+  "normalized_ir_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "projected_ir_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+  "reachability_result_hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+  "reachable_after_projection": [],
+  "roots": [
+    "client"
+  ],
+  "schema_version": "dependency-algebra.dependency.v1",
+  "target": "database",
+  "workload_id": "checkout"
+}

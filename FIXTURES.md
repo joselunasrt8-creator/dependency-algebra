@@ -36,3 +36,18 @@ Fixtures under `fixtures/reachability/` are schema-only conformance vectors for 
 - `fixtures/reachability/multi-root-partial.json`: multiple roots are evaluated per workload and reachability succeeds when one root reaches the target.
 - `fixtures/reachability/cycle-termination.json`: directed cycle evidence terminates by visited-component tracking.
 - `fixtures/reachability/self-loop.json`: self-loop edge is traversable while root-equals-target reachability succeeds by zero-length path semantics.
+
+## Dependency predicate contract fixtures
+
+Fixtures under `fixtures/dependency/` are schema-only conformance vectors for `DEPENDENCY_PREDICATE_CONTRACT.md` and `schemas/dependency.schema.json`. They do not implement predicate evaluation.
+
+- `fixtures/dependency/dependency-true.json`: projected reachability is empty, so `Dependency(S, W)` is true.
+- `fixtures/dependency/dependency-false.json`: projected reachability remains, so `Dependency(S, W)` is false.
+- `fixtures/dependency/redundant-topology.json`: redundant structure preserves reachability after removing one candidate.
+- `fixtures/dependency/bridge-dependency.json`: bridge removal eliminates projected reachability.
+- `fixtures/dependency/root-dependency.json`: root removal eliminates projected reachability.
+- `fixtures/dependency/target-dependency.json`: target removal eliminates projected reachability.
+- `fixtures/dependency/multiple-candidate-dependency.json`: multiple-candidate removal eliminates projected reachability.
+- `fixtures/dependency/dependency-hash.json`: canonical hash vector for `dependency_result_hash`.
+- `fixtures/dependency/invalid-projected-ir-rejection.json`: invalid projected IR identity rejection vector.
+- `fixtures/dependency/invalid-reachability-result-rejection.json`: invalid projected reachability identity rejection vector.

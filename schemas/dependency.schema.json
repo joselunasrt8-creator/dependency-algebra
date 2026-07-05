@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dependency-algebra.local/schemas/dependency.schema.json",
+  "title": "Dependency Algebra Dependency Predicate Result v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "workload_id",
+    "normalized_ir_hash",
+    "roots",
+    "target",
+    "candidate_set",
+    "projected_ir_hash",
+    "reachability_result_hash",
+    "dependency",
+    "dependency_reason",
+    "reachable_after_projection",
+    "dependency_result_hash",
+    "diagnostics"
+  ],
+  "properties": {
+    "schema_version": { "const": "dependency-algebra.dependency.v1" },
+    "workload_id": { "$ref": "#/$defs/id" },
+    "normalized_ir_hash": { "$ref": "#/$defs/sha256" },
+    "roots": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/id" } },
+    "target": { "$ref": "#/$defs/id" },
+    "candidate_set": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/id" } },
+    "projected_ir_hash": { "$ref": "#/$defs/sha256" },
+    "reachability_result_hash": { "$ref": "#/$defs/sha256" },
+    "dependency": { "type": "boolean" },
+    "dependency_reason": { "enum": ["no_structurally_valid_path_after_projection", "structurally_valid_path_remaining_after_projection"] },
+    "reachable_after_projection": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/id" } },
+    "dependency_result_hash": { "$ref": "#/$defs/sha256" },
+    "diagnostics": { "type": "array", "items": { "$ref": "#/$defs/diagnostic" } }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-zA-Z0-9_.-]+$" },
+    "sha256": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "diagnostic": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "severity", "message", "subject"],
+      "properties": {
+        "code": { "enum": ["DEPENDENCY.TRUE", "DEPENDENCY.FALSE", "DEPENDENCY.EMPTY_REACHABILITY", "DEPENDENCY.REACHABILITY_REMAINING", "DEPENDENCY.INVALID_INPUT"] },
+        "severity": { "enum": ["info", "warning", "error"] },
+        "message": { "type": "string", "minLength": 1 },
+        "subject": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "id"],
+          "properties": {
+            "kind": { "enum": ["workload", "candidate_set", "projected_ir", "reachability_result", "component"] },
+            "id": { "type": "string" }
+          }
+        }
+      }
+    }
+  }
+}
