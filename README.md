@@ -162,6 +162,11 @@ Issue #10 freezes the compiler architecture boundary between source topology and
 
 This contract remains planning-only and does not add parser, normalizer, reachability, projection, predicate, artifact emission, CLI, runtime, proof, authority, policy, governance, execution, or mutation surfaces.
 
+
+## Reachability Contract
+
+Issue #11 freezes canonical `Reach(W)` semantics in `REACHABILITY_CONTRACT.md`. Reachability is a per-workload, directed-edge, path-existence contract over normalized IR. It defines deterministic multi-root handling, unreachable results, cycle termination, self-loop handling, disconnected-component behavior, result shape, semantic-array canonicalization before hashing, ordering, and hash boundaries without adding a traversal engine, complement projection, dependency predicate evaluator, artifact emitter, CLI, runtime, proof, authority, policy, governance, execution, or mutation surface.
+
 ## Frontend Planning Contracts
 
 `COMPILER_FRONTEND_CONTRACT.md` closes the pre-implementation frontend planning gaps by defining parser diagnostic taxonomy, AST construction rules, normalization design rules, diagnostic ordering, diagnostic schema boundaries, and diagnostics-only conformance vectors. It remains contract-only and does not add parser, AST builder, normalizer, analyzer, runtime, proof, authority, governance, policy, execution, or mutation behavior.

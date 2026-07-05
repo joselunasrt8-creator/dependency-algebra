@@ -38,7 +38,7 @@ A candidate component set `S` is a structural dependency of workload `W` when re
 
 ### Reach
 
-`Reach(W)` is a deterministic existence check from workload roots to the workload target over directed edges in normalized IR. Cycles are allowed, but traversal must terminate by tracking visited components. Full path enumeration is not required for v1.
+`Reach(W)` is a deterministic existence check from workload roots to the workload target over directed edges in normalized IR. The canonical v1 semantics are frozen in `REACHABILITY_CONTRACT.md`: reachability is path existence only, full paths are not enumerated, multiple roots are evaluated per workload with existential success, unreachable targets emit `reachable: false`, cycles terminate by visited-component tracking, self-loops are traversable, disconnected components are preserved but ignored unless reached, and result hashes cover the semantically normalized canonical result payload excluding only `reachability_result_hash`.
 
 ### Structurally valid path
 

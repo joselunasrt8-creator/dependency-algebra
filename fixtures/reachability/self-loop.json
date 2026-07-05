@@ -1,0 +1,30 @@
+{
+  "schema_version": "dependency-algebra.reachability.v1",
+  "topology_id": "reachability-self-loop",
+  "normalized_ir_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+  "results": [
+    {
+      "workload_id": "serve",
+      "roots": [
+        "api"
+      ],
+      "target": "api",
+      "reachable": true,
+      "reached_by": [
+        "api"
+      ],
+      "visited_nodes": [
+        "api"
+      ],
+      "traversal_edges": [
+        {
+          "edge_id": "api-api",
+          "from": "api",
+          "to": "api"
+        }
+      ],
+      "diagnostics": []
+    }
+  ],
+  "reachability_result_hash": "sha256:9c0faf3965676c748fcc94eda9e1f553561d9468e33d47a162e9b37f023fa71d"
+}

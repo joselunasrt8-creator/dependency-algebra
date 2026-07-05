@@ -1,0 +1,58 @@
+{
+  "schema_version": "dependency-algebra.reachability.v1",
+  "topology_id": "reachability-cycle",
+  "normalized_ir_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+  "results": [
+    {
+      "workload_id": "serve",
+      "roots": [
+        "client"
+      ],
+      "target": "db",
+      "reachable": true,
+      "reached_by": [
+        "client"
+      ],
+      "visited_nodes": [
+        "api",
+        "cache",
+        "client",
+        "db"
+      ],
+      "traversal_edges": [
+        {
+          "edge_id": "api-cache",
+          "from": "api",
+          "to": "cache"
+        },
+        {
+          "edge_id": "api-db",
+          "from": "api",
+          "to": "db"
+        },
+        {
+          "edge_id": "cache-api",
+          "from": "cache",
+          "to": "api"
+        },
+        {
+          "edge_id": "client-api",
+          "from": "client",
+          "to": "api"
+        }
+      ],
+      "diagnostics": [
+        {
+          "code": "REACHABILITY.CYCLE_TERMINATED",
+          "severity": "info",
+          "message": "Traversal terminated without re-expanding already visited component api.",
+          "subject": {
+            "kind": "component",
+            "id": "api"
+          }
+        }
+      ]
+    }
+  ],
+  "reachability_result_hash": "sha256:d35ead33dfd47dedca57596bc9d01ca7e0b480a22d82d658606d4f943811b083"
+}
