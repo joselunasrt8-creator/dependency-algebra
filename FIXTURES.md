@@ -51,3 +51,17 @@ Fixtures under `fixtures/dependency/` are schema-only conformance vectors for `D
 - `fixtures/dependency/dependency-hash.json`: canonical hash vector for `dependency_result_hash`.
 - `fixtures/dependency/invalid-projected-ir-rejection.json`: invalid projected IR identity rejection vector.
 - `fixtures/dependency/invalid-reachability-result-rejection.json`: invalid projected reachability identity rejection vector.
+## Complement projection contract fixtures
+
+Fixtures under `fixtures/projection/` are schema-only conformance vectors for `COMPLEMENT_PROJECTION_CONTRACT.md` and `schemas/projection.schema.json`. They do not implement projection.
+
+- `fixtures/projection/remove-non-critical-component.json`: removes an isolated candidate branch while preserving the main path.
+- `fixtures/projection/remove-bridge-component.json`: removes a bridge component and its incident edges without classifying impact.
+- `fixtures/projection/remove-root-component.json`: removes a workload root and emits `PROJECTION.REMOVED_ROOT`.
+- `fixtures/projection/remove-target-component.json`: removes a workload target and emits `PROJECTION.REMOVED_TARGET`.
+- `fixtures/projection/remove-cycle-component.json`: removes a cycle participant and preserves remaining graph structure.
+- `fixtures/projection/remove-self-loop-component.json`: removes a self-loop component and its self-loop edge.
+- `fixtures/projection/remove-multiple-components.json`: removes multiple candidates as one canonical set.
+- `fixtures/projection/projected-ir-hash.json`: canonical `projected_ir_hash` fixture.
+- `fixtures/projection/unknown-candidate-rejection.json`: structural rejection for unknown candidate identifiers.
+- `fixtures/projection/duplicate-candidate-rejection.json`: structural rejection for duplicate candidate identifiers.

@@ -172,3 +172,7 @@ Issue #11 freezes canonical `Reach(W)` semantics in `REACHABILITY_CONTRACT.md`. 
 ## Frontend Planning Contracts
 
 `COMPILER_FRONTEND_CONTRACT.md` closes the pre-implementation frontend planning gaps by defining parser diagnostic taxonomy, AST construction rules, normalization design rules, diagnostic ordering, diagnostic schema boundaries, and diagnostics-only conformance vectors. It remains contract-only and does not add parser, AST builder, normalizer, analyzer, runtime, proof, authority, governance, policy, execution, or mutation behavior.
+
+## Complement Projection Contract
+
+Issue #12 freezes canonical `¬S` semantics in `COMPLEMENT_PROJECTION_CONTRACT.md`. Complement projection is a deterministic, structural-only transformation from normalized IR plus a component candidate set to projected normalized IR. It removes candidate components and incident edges, preserves unaffected graph structure and workload definitions, defines `projected_ir_hash`, and emits structural diagnostics only. It does not add a projection engine, reachability engine, dependency predicate evaluator, compiler artifact emitter, CLI, runtime, proof, authority, policy, governance, execution, or mutation surface.

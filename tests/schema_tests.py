@@ -27,6 +27,7 @@ SCHEMA_PATHS = [
     SCHEMAS / "diagnostic.schema.json",
     SCHEMAS / "reachability.schema.json",
     SCHEMAS / "dependency.schema.json",
+    SCHEMAS / "projection.schema.json",
 ]
 TOPOLOGY_SCHEMA_PATH = SCHEMAS / "topology.schema.json"
 CLASSIFICATION_SCHEMA_PATH = SCHEMAS / "classification.schema.json"
@@ -35,6 +36,7 @@ IR_SCHEMA_PATH = SCHEMAS / "ir.schema.json"
 DIAGNOSTIC_SCHEMA_PATH = SCHEMAS / "diagnostic.schema.json"
 REACHABILITY_SCHEMA_PATH = SCHEMAS / "reachability.schema.json"
 DEPENDENCY_SCHEMA_PATH = SCHEMAS / "dependency.schema.json"
+PROJECTION_SCHEMA_PATH = SCHEMAS / "projection.schema.json"
 
 
 def load_json(path: Path):
@@ -692,3 +694,88 @@ class DependencyPredicateSchemaContractTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+
+def canonical_hash(doc):
+    payload = json.loads(json.dumps(doc))
+    payload.pop("projected_ir_hash", None)
+    canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+    import hashlib
+    return "sha256:" + hashlib.sha256(canonical).hexdigest()
+
+
+class ProjectionContractTests(unittest.TestCase):
+    """Contract helpers only; these tests do not implement a projection engine."""
+
+    def projection_paths(self):
+        return sorted((FIXTURES / "projection").glob("*.json"))
+
+    @unittest.skipIf(Draft202012Validator is None, "jsonschema is not installed")
+    def test_projection_schema_and_fixtures_validate(self):
+        validator = json_schema_validator(PROJECTION_SCHEMA_PATH)
+        paths = self.projection_paths()
+        self.assertGreaterEqual(len(paths), 10)
+        for path in paths:
+            with self.subTest(path=path):
+                validator.validate(load_json(path))
+
+    def test_projected_ir_invariants_hold_for_success_fixtures(self):
+        for path in self.projection_paths():
+            doc = load_json(path)
+            if "projected_ir" not in doc:
+                continue
+            with self.subTest(path=path):
+                ir = doc["projected_ir"]
+                component_ids = [c["id"] for c in ir["components"]]
+                edge_ids = [e["id"] for e in ir["edges"]]
+                self.assertEqual(component_ids, sorted(component_ids))
+                self.assertEqual(edge_ids, sorted(edge_ids))
+                self.assertEqual(len(component_ids), len(set(component_ids)))
+                self.assertEqual(len(edge_ids), len(set(edge_ids)))
+                component_set = set(component_ids)
+                for edge in ir["edges"]:
+                    self.assertIn(edge["from"], component_set)
+                    self.assertIn(edge["to"], component_set)
+                self.assertEqual(ir["topology_id"], doc["topology_id"])
+                self.assertEqual([w["id"] for w in ir["workloads"]], sorted(w["id"] for w in ir["workloads"]))
+
+    def test_incident_edges_removed_and_unaffected_structure_remains(self):
+        doc = load_json(FIXTURES / "projection" / "remove-non-critical-component.json")
+        ir = doc["projected_ir"]
+        self.assertEqual([c["id"] for c in ir["components"]], ["api", "client", "db"])
+        self.assertEqual([e["id"] for e in ir["edges"]], ["api-db", "client-api"])
+        self.assertNotIn("cache", ir["adjacency"])
+        self.assertEqual(ir["workloads"][0]["candidate_set"], ["cache"])
+
+    def test_candidate_ordering_does_not_affect_projected_ir_identity(self):
+        left = load_json(FIXTURES / "projection" / "remove-multiple-components.json")
+        right = json.loads(json.dumps(left))
+        right["candidate_set"] = list(reversed(right["candidate_set"]))
+        self.assertEqual(left["projected_ir"], right["projected_ir"])
+        self.assertEqual(left["projected_ir"]["components"], right["projected_ir"]["components"])
+        self.assertEqual(left["projected_ir"]["edges"], right["projected_ir"]["edges"])
+        self.assertEqual(canonical_hash(left["projected_ir"]), canonical_hash(right["projected_ir"]))
+
+    def test_projected_ir_hash_matches_canonical_fixture(self):
+        doc = load_json(FIXTURES / "projection" / "projected-ir-hash.json")
+        self.assertEqual(doc["projected_ir_hash"], canonical_hash(doc["projected_ir"]))
+
+    def test_projection_rejection_diagnostics_are_structural(self):
+        expectations = {
+            "unknown-candidate-rejection.json": "PROJECTION.UNKNOWN_COMPONENT",
+            "duplicate-candidate-rejection.json": "PROJECTION.DUPLICATE_CANDIDATE",
+        }
+        for filename, code in expectations.items():
+            with self.subTest(filename=filename):
+                doc = load_json(FIXTURES / "projection" / filename)
+                self.assertNotIn("projected_ir", doc)
+                self.assertEqual(doc["diagnostics"][0]["code"], code)
+
+    def test_forbidden_runtime_authority_governance_proof_fields_excluded(self):
+        forbidden = {"runtime", "authority", "governance", "proof", "policy", "execution", "mutation", "generated_at", "machine_path"}
+        for path in self.projection_paths():
+            text = path.read_text(encoding="utf-8")
+            with self.subTest(path=path):
+                for field in forbidden:
+                    self.assertNotRegex(text, rf'"{field}"\s*:')

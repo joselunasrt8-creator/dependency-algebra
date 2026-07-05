@@ -1,0 +1,68 @@
+{
+  "schema_version": "dependency-algebra.projection.v1",
+  "topology_id": "remove-bridge-component",
+  "normalized_ir_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "candidate_set": [
+    "api"
+  ],
+  "projected_ir": {
+    "schema_version": "dependency-algebra.ir.v1",
+    "topology_id": "remove-bridge-component",
+    "components": [
+      {
+        "id": "client",
+        "type": "entry",
+        "metadata": {},
+        "source": {
+          "source_id": "client"
+        }
+      },
+      {
+        "id": "db",
+        "type": "store",
+        "metadata": {},
+        "source": {
+          "source_id": "db"
+        }
+      }
+    ],
+    "edges": [],
+    "adjacency": {
+      "client": [],
+      "db": []
+    },
+    "reverse_adjacency": {
+      "client": [],
+      "db": []
+    },
+    "workloads": [
+      {
+        "id": "workload",
+        "roots": [
+          "client"
+        ],
+        "target": "db",
+        "candidate_set": [
+          "api"
+        ],
+        "expected_classification": "NULL",
+        "source": {
+          "source_id": "workload"
+        }
+      }
+    ],
+    "normalized_ir_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+  },
+  "diagnostics": [
+    {
+      "code": "PROJECTION.COMPONENT_REMOVED",
+      "severity": "info",
+      "message": "component api removed by complement projection",
+      "subject": {
+        "kind": "component",
+        "id": "api"
+      }
+    }
+  ],
+  "projected_ir_hash": "sha256:6c73869e41574f984c5049e310d0ca4cb0d2c830423131743269996952f08262"
+}

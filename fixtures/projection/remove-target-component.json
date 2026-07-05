@@ -1,0 +1,97 @@
+{
+  "schema_version": "dependency-algebra.projection.v1",
+  "topology_id": "remove-target-component",
+  "normalized_ir_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "candidate_set": [
+    "db"
+  ],
+  "projected_ir": {
+    "schema_version": "dependency-algebra.ir.v1",
+    "topology_id": "remove-target-component",
+    "components": [
+      {
+        "id": "api",
+        "type": "service",
+        "metadata": {},
+        "source": {
+          "source_id": "api"
+        }
+      },
+      {
+        "id": "client",
+        "type": "entry",
+        "metadata": {},
+        "source": {
+          "source_id": "client"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "client-api",
+        "from": "client",
+        "to": "api",
+        "metadata": {},
+        "source": {
+          "source_id": "client-api"
+        }
+      }
+    ],
+    "adjacency": {
+      "api": [],
+      "client": [
+        {
+          "edge_id": "client-api",
+          "component_id": "api"
+        }
+      ]
+    },
+    "reverse_adjacency": {
+      "api": [
+        {
+          "edge_id": "client-api",
+          "component_id": "client"
+        }
+      ],
+      "client": []
+    },
+    "workloads": [
+      {
+        "id": "workload",
+        "roots": [
+          "client"
+        ],
+        "target": "db",
+        "candidate_set": [
+          "db"
+        ],
+        "expected_classification": "NULL",
+        "source": {
+          "source_id": "workload"
+        }
+      }
+    ],
+    "normalized_ir_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+  },
+  "diagnostics": [
+    {
+      "code": "PROJECTION.COMPONENT_REMOVED",
+      "severity": "info",
+      "message": "component db removed by complement projection",
+      "subject": {
+        "kind": "component",
+        "id": "db"
+      }
+    },
+    {
+      "code": "PROJECTION.REMOVED_TARGET",
+      "severity": "warning",
+      "message": "candidate set removes workload target db",
+      "subject": {
+        "kind": "target",
+        "id": "db"
+      }
+    }
+  ],
+  "projected_ir_hash": "sha256:dfbb033390b9c1b42298a4e3b799dad97f2ff6a2414f6bb78b20df8c31a5cb63"
+}

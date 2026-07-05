@@ -74,3 +74,7 @@ For v1 schema stabilization, these fields are schema-defined but may be empty ar
 ## Non-goals
 
 The compiler never authorizes execution, emits runtime proof, mutates external state, requires authority tokens, or determines ContinuityOS governance legitimacy.
+
+## Complement projection contract
+
+The canonical v1 meaning of `¬S` is frozen in `COMPLEMENT_PROJECTION_CONTRACT.md`. Projection is defined only over normalized IR and component-only candidate sets. It removes each candidate component and every incident edge, preserves all unaffected components, unaffected edges, topology identity, graph direction, and workload definitions, and produces deterministic projected IR for downstream dependency predicate evaluation. Projection does not evaluate reachability or dependency predicates and does not classify workloads.
