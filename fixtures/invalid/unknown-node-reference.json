@@ -1,0 +1,19 @@
+{
+  "schema_version": "dependency-algebra.topology.v1",
+  "topology_id": "unknown-node-reference",
+  "components": [
+    { "id": "client" }
+  ],
+  "edges": [
+    { "id": "client-missing", "from": "client", "to": "missing" }
+  ],
+  "workloads": [
+    {
+      "id": "broken",
+      "roots": ["client"],
+      "target": "missing",
+      "candidate_set": ["client"],
+      "expected_classification": "NULL"
+    }
+  ]
+}

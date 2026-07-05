@@ -1,0 +1,8 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dependency-algebra.local/schemas/classification.schema.json",
+  "title": "Dependency Algebra Structural Classification",
+  "type": "string",
+  "enum": ["VALID", "DEGRADED", "NULL"],
+  "description": "Structural classification only; not governance legitimacy, execution eligibility, runtime authorization, or proof."
+}

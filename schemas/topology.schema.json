@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dependency-algebra.local/schemas/topology.schema.json",
+  "title": "Dependency Algebra Topology v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "topology_id", "components", "edges", "workloads"],
+  "properties": {
+    "schema_version": { "const": "dependency-algebra.topology.v1" },
+    "topology_id": { "type": "string", "pattern": "^[a-zA-Z0-9_.-]+$" },
+    "components": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-zA-Z0-9_.-]+$" },
+          "type": { "type": "string" },
+          "labels": { "type": "object", "additionalProperties": { "type": "string" } }
+        }
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "from", "to"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-zA-Z0-9_.-]+$" },
+          "from": { "type": "string" },
+          "to": { "type": "string" },
+          "labels": { "type": "object", "additionalProperties": { "type": "string" } }
+        }
+      }
+    },
+    "workloads": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "roots", "target", "candidate_set", "expected_classification"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-zA-Z0-9_.-]+$" },
+          "roots": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+          "target": { "type": "string" },
+          "candidate_set": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+          "expected_classification": { "$ref": "classification.schema.json" }
+        }
+      }
+    }
+  }
+}

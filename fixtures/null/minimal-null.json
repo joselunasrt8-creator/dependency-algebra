@@ -1,0 +1,22 @@
+{
+  "schema_version": "dependency-algebra.topology.v1",
+  "topology_id": "minimal-null",
+  "components": [
+    { "id": "client" },
+    { "id": "api" },
+    { "id": "database" }
+  ],
+  "edges": [
+    { "id": "client-api", "from": "client", "to": "api" },
+    { "id": "api-database", "from": "api", "to": "database" }
+  ],
+  "workloads": [
+    {
+      "id": "serve-api",
+      "roots": ["client"],
+      "target": "database",
+      "candidate_set": ["api"],
+      "expected_classification": "NULL"
+    }
+  ]
+}

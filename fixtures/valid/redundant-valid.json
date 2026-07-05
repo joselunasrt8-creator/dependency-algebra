@@ -1,0 +1,25 @@
+{
+  "schema_version": "dependency-algebra.topology.v1",
+  "topology_id": "redundant-valid",
+  "components": [
+    { "id": "client" },
+    { "id": "primary-api" },
+    { "id": "secondary-api" },
+    { "id": "database" }
+  ],
+  "edges": [
+    { "id": "client-primary", "from": "client", "to": "primary-api" },
+    { "id": "client-secondary", "from": "client", "to": "secondary-api" },
+    { "id": "primary-db", "from": "primary-api", "to": "database" },
+    { "id": "secondary-db", "from": "secondary-api", "to": "database" }
+  ],
+  "workloads": [
+    {
+      "id": "serve-api",
+      "roots": ["client"],
+      "target": "database",
+      "candidate_set": ["primary-api"],
+      "expected_classification": "VALID"
+    }
+  ]
+}
