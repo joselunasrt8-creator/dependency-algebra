@@ -93,6 +93,18 @@ class SchemaContractTests(unittest.TestCase):
             ],
         )
 
+
+    def test_duplicate_identifier_fixture_fails_deterministically(self):
+        path = FIXTURES / "invalid" / "duplicate-identifiers.json"
+        errors = validate_topology(load_json(path))
+        self.assertEqual(
+            errors,
+            [
+                "duplicate component ids: ['client']",
+                "duplicate edge ids: ['client-api']",
+            ],
+        )
+
     def test_malformed_json_fixture_fails_parse(self):
         path = FIXTURES / "invalid" / "malformed-json.json"
         with self.assertRaises(json.JSONDecodeError):
