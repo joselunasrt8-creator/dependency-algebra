@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dependency-algebra.local/schemas/reachability.schema.json",
+  "title": "Dependency Algebra Reachability Result v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "topology_id", "normalized_ir_hash", "results"],
+  "properties": {
+    "schema_version": { "const": "dependency-algebra.reachability.v1" },
+    "topology_id": { "$ref": "#/$defs/id" },
+    "normalized_ir_hash": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "reachability_result_hash": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "results": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/workload_result" } }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-zA-Z0-9_.-]+$" },
+    "edge_traversal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["edge_id", "from", "to"],
+      "properties": {
+        "edge_id": { "$ref": "#/$defs/id" },
+        "from": { "$ref": "#/$defs/id" },
+        "to": { "$ref": "#/$defs/id" }
+      }
+    },
+    "diagnostic": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "severity", "message", "subject"],
+      "properties": {
+        "code": { "type": "string", "pattern": "^REACHABILITY\\.[A-Z0-9_]+$" },
+        "severity": { "enum": ["info", "warning"] },
+        "message": { "type": "string", "minLength": 1 },
+        "subject": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "id"],
+          "properties": {
+            "kind": { "enum": ["workload", "root", "target", "component", "edge"] },
+            "id": { "type": "string" }
+          }
+        }
+      }
+    },
+    "workload_result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["workload_id", "roots", "target", "reachable", "reached_by", "visited_nodes", "traversal_edges", "diagnostics"],
+      "properties": {
+        "workload_id": { "$ref": "#/$defs/id" },
+        "roots": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/id" } },
+        "target": { "$ref": "#/$defs/id" },
+        "reachable": { "type": "boolean" },
+        "reached_by": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/id" } },
+        "visited_nodes": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/id" } },
+        "traversal_edges": { "type": "array", "items": { "$ref": "#/$defs/edge_traversal" } },
+        "diagnostics": { "type": "array", "items": { "$ref": "#/$defs/diagnostic" } }
+      }
+    }
+  }
+}

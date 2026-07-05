@@ -25,12 +25,14 @@ SCHEMA_PATHS = [
     SCHEMAS / "ast.schema.json",
     SCHEMAS / "ir.schema.json",
     SCHEMAS / "diagnostic.schema.json",
+    SCHEMAS / "reachability.schema.json",
 ]
 TOPOLOGY_SCHEMA_PATH = SCHEMAS / "topology.schema.json"
 CLASSIFICATION_SCHEMA_PATH = SCHEMAS / "classification.schema.json"
 AST_SCHEMA_PATH = SCHEMAS / "ast.schema.json"
 IR_SCHEMA_PATH = SCHEMAS / "ir.schema.json"
 DIAGNOSTIC_SCHEMA_PATH = SCHEMAS / "diagnostic.schema.json"
+REACHABILITY_SCHEMA_PATH = SCHEMAS / "reachability.schema.json"
 
 
 def load_json(path: Path):
@@ -473,6 +475,92 @@ class FrontendDiagnosticContractTests(unittest.TestCase):
         }
         actual = {path.name for path in (FIXTURES / "diagnostics").glob("*.json")}
         self.assertEqual(actual, expected)
+
+
+@unittest.skipIf(Draft202012Validator is None, "jsonschema is not installed")
+class ReachabilitySchemaContractTests(unittest.TestCase):
+    FORBIDDEN_REACHABILITY_TERMS = {
+        "absolute_path",
+        "timestamp",
+        "environment",
+        "random",
+        "authorization",
+        "authority",
+        "proof",
+        "governance",
+        "policy",
+        "execution",
+        "mutation",
+    }
+
+    def canonical_bytes(self, doc):
+        payload = dict(doc)
+        payload.pop("reachability_result_hash", None)
+        return json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+
+    def diagnostic_sort_key(self, diagnostic):
+        subject = diagnostic["subject"]
+        return (diagnostic["code"], diagnostic["severity"], subject["kind"], subject["id"])
+
+    def assert_reachability_ordering(self, doc):
+        workload_ids = [result["workload_id"] for result in doc["results"]]
+        self.assertEqual(workload_ids, sorted(workload_ids))
+        for result in doc["results"]:
+            self.assertEqual(result["roots"], sorted(set(result["roots"])))
+            self.assertEqual(result["reached_by"], sorted(set(result["reached_by"])))
+            self.assertEqual(result["visited_nodes"], sorted(set(result["visited_nodes"])))
+            self.assertEqual(
+                result["traversal_edges"],
+                sorted(
+                    result["traversal_edges"],
+                    key=lambda edge: (edge["edge_id"], edge["from"], edge["to"]),
+                ),
+            )
+            self.assertEqual(result["diagnostics"], sorted(result["diagnostics"], key=self.diagnostic_sort_key))
+            if result["reachable"]:
+                self.assertGreaterEqual(len(result["reached_by"]), 1)
+            else:
+                self.assertEqual(result["reached_by"], [])
+                self.assertIn("REACHABILITY.UNREACHABLE_TARGET", [diagnostic["code"] for diagnostic in result["diagnostics"]])
+
+    def test_reachability_fixtures_validate_and_are_ordered(self):
+        validator = json_schema_validator(REACHABILITY_SCHEMA_PATH)
+        for path in sorted((FIXTURES / "reachability").glob("*.json")):
+            with self.subTest(path=path):
+                doc = load_json(path)
+                validator.validate(doc)
+                self.assert_reachability_ordering(doc)
+
+    def test_required_reachability_vectors_exist(self):
+        expected = {
+            "cycle-termination.json",
+            "multi-root-partial.json",
+            "reachable-single-root.json",
+            "self-loop.json",
+            "unreachable-disconnected.json",
+        }
+        actual = {path.name for path in (FIXTURES / "reachability").glob("*.json")}
+        self.assertEqual(actual, expected)
+
+    def test_reachability_hash_vectors_are_stable(self):
+        import hashlib
+
+        for path in sorted((FIXTURES / "reachability").glob("*.json")):
+            with self.subTest(path=path):
+                doc = load_json(path)
+                self.assertFalse(self.canonical_bytes(doc).endswith(b"\n"))
+                self.assertEqual(
+                    "sha256:" + hashlib.sha256(self.canonical_bytes(doc)).hexdigest(),
+                    doc["reachability_result_hash"],
+                )
+
+    def test_reachability_schema_excludes_forbidden_terms(self):
+        schema_text = json.dumps(load_json(REACHABILITY_SCHEMA_PATH)).lower()
+        fixture_text = "\n".join(path.read_text(encoding="utf-8").lower() for path in (FIXTURES / "reachability").glob("*.json"))
+        for term in self.FORBIDDEN_REACHABILITY_TERMS:
+            with self.subTest(term=term):
+                self.assertNotIn(term, schema_text)
+                self.assertNotIn(term, fixture_text)
 
 
 if __name__ == "__main__":

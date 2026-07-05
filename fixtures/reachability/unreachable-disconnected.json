@@ -1,0 +1,39 @@
+{
+  "schema_version": "dependency-algebra.reachability.v1",
+  "topology_id": "reachability-disconnected",
+  "normalized_ir_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+  "results": [
+    {
+      "workload_id": "serve",
+      "roots": [
+        "client"
+      ],
+      "target": "db",
+      "reachable": false,
+      "reached_by": [],
+      "visited_nodes": [
+        "api",
+        "client"
+      ],
+      "traversal_edges": [
+        {
+          "edge_id": "client-api",
+          "from": "client",
+          "to": "api"
+        }
+      ],
+      "diagnostics": [
+        {
+          "code": "REACHABILITY.UNREACHABLE_TARGET",
+          "severity": "warning",
+          "message": "No workload root reaches target db.",
+          "subject": {
+            "kind": "workload",
+            "id": "serve"
+          }
+        }
+      ]
+    }
+  ],
+  "reachability_result_hash": "sha256:799672d6beb1bed02d75339bc3a1b753b36709f85c1f4ab1279d33c96320cdae"
+}

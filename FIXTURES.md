@@ -25,3 +25,14 @@ Invalid unresolved references and duplicate table identifiers remain represented
 ## Frontend diagnostic fixtures
 
 Fixtures under `fixtures/diagnostics/` are diagnostics-only conformance vectors for future parser, AST construction, and normalization failures. They cover malformed JSON, unsupported topology schema versions, duplicate component and workload identifiers, unresolved edge endpoints, unresolved workload roots, empty candidate sets, and deterministic multi-diagnostic ordering. These fixtures are not produced by implementation code in this repository state.
+
+
+## Reachability contract fixtures
+
+Fixtures under `fixtures/reachability/` are schema-only conformance vectors for `REACHABILITY_CONTRACT.md` and `schemas/reachability.schema.json`. They do not implement traversal.
+
+- `fixtures/reachability/reachable-single-root.json`: single-root directed path reaches the workload target.
+- `fixtures/reachability/unreachable-disconnected.json`: target is in a disconnected component, preserving the graph while emitting an unreachable result.
+- `fixtures/reachability/multi-root-partial.json`: multiple roots are evaluated per workload and reachability succeeds when one root reaches the target.
+- `fixtures/reachability/cycle-termination.json`: directed cycle evidence terminates by visited-component tracking.
+- `fixtures/reachability/self-loop.json`: self-loop edge is traversable while root-equals-target reachability succeeds by zero-length path semantics.

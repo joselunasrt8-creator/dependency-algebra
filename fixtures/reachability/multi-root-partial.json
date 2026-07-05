@@ -1,0 +1,39 @@
+{
+  "schema_version": "dependency-algebra.reachability.v1",
+  "topology_id": "reachability-multi-root",
+  "normalized_ir_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+  "results": [
+    {
+      "workload_id": "serve",
+      "roots": [
+        "backup",
+        "client"
+      ],
+      "target": "db",
+      "reachable": true,
+      "reached_by": [
+        "client"
+      ],
+      "visited_nodes": [
+        "api",
+        "backup",
+        "client",
+        "db"
+      ],
+      "traversal_edges": [
+        {
+          "edge_id": "api-db",
+          "from": "api",
+          "to": "db"
+        },
+        {
+          "edge_id": "client-api",
+          "from": "client",
+          "to": "api"
+        }
+      ],
+      "diagnostics": []
+    }
+  ],
+  "reachability_result_hash": "sha256:8d21f0127f5bd278b8a50c2b92ec07e7c3a62690899d1707044ced2fc836a423"
+}
