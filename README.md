@@ -12,7 +12,7 @@
 
 Its responsibility is to transform topology descriptions into deterministic structural-analysis artifacts through reproducible compiler passes.
 
-Current status: **planning-first**, with implementation beginning only after specification stabilization.
+Current status: **compiler CLI harness milestone**, with a bounded structural compiler facade and thin argparse adapter added after contract stabilization.
 
 ---
 
@@ -87,7 +87,7 @@ The implemented surface is intentionally schema-only:
 - schema and boundary conformance tests under `tests/`
 - dependency predicate result schema and fixtures
 
-No compiler engine, CLI, GitHub Action, ContinuityOS integration, proof system, authority module, runtime hook, or execution surface is included in this milestone.
+This milestone includes a structural compiler facade, analysis engine, canonical serialization utilities, and a thin CLI harness. It still includes no GitHub Action, ContinuityOS integration, proof system, authority module, runtime hook, governance surface, policy surface, or external-state mutation surface.
 
 ---
 

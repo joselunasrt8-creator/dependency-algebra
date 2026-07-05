@@ -10,7 +10,7 @@ This repository owns structural compiler contracts and future structural analysi
 - deterministic serialization rules
 - canonical fixtures
 - schema conformance tests
-- future parser, AST, IR, reachability, complement projection, dependency predicate, and artifact emission code
+- parser, AST-to-IR normalization, reachability, dependency predicate, hash receipt emission, and thin CLI adapter code
 
 ## Excluded responsibilities
 
