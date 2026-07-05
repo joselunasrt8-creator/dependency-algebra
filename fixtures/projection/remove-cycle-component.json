@@ -1,0 +1,116 @@
+{
+  "schema_version": "dependency-algebra.projection.v1",
+  "topology_id": "remove-cycle-component",
+  "normalized_ir_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "candidate_set": [
+    "b"
+  ],
+  "projected_ir": {
+    "schema_version": "dependency-algebra.ir.v1",
+    "topology_id": "remove-cycle-component",
+    "components": [
+      {
+        "id": "a",
+        "type": "entry",
+        "metadata": {},
+        "source": {
+          "source_id": "a"
+        }
+      },
+      {
+        "id": "c",
+        "type": "service",
+        "metadata": {},
+        "source": {
+          "source_id": "c"
+        }
+      },
+      {
+        "id": "d",
+        "type": "store",
+        "metadata": {},
+        "source": {
+          "source_id": "d"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "c-a",
+        "from": "c",
+        "to": "a",
+        "metadata": {},
+        "source": {
+          "source_id": "c-a"
+        }
+      },
+      {
+        "id": "c-d",
+        "from": "c",
+        "to": "d",
+        "metadata": {},
+        "source": {
+          "source_id": "c-d"
+        }
+      }
+    ],
+    "adjacency": {
+      "a": [],
+      "c": [
+        {
+          "edge_id": "c-a",
+          "component_id": "a"
+        },
+        {
+          "edge_id": "c-d",
+          "component_id": "d"
+        }
+      ],
+      "d": []
+    },
+    "reverse_adjacency": {
+      "a": [
+        {
+          "edge_id": "c-a",
+          "component_id": "c"
+        }
+      ],
+      "c": [],
+      "d": [
+        {
+          "edge_id": "c-d",
+          "component_id": "c"
+        }
+      ]
+    },
+    "workloads": [
+      {
+        "id": "workload",
+        "roots": [
+          "a"
+        ],
+        "target": "d",
+        "candidate_set": [
+          "b"
+        ],
+        "expected_classification": "NULL",
+        "source": {
+          "source_id": "workload"
+        }
+      }
+    ],
+    "normalized_ir_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+  },
+  "diagnostics": [
+    {
+      "code": "PROJECTION.COMPONENT_REMOVED",
+      "severity": "info",
+      "message": "component b removed by complement projection",
+      "subject": {
+        "kind": "component",
+        "id": "b"
+      }
+    }
+  ],
+  "projected_ir_hash": "sha256:307d9de25dde074229f99578071e33718cd6f00ea9c45b7ae8564a127e9319b2"
+}

@@ -32,3 +32,7 @@ Hash-participating IR fields are the normalized structural fields: schema versio
 ## Milestone 1 test reflection
 
 Milestone 1 does not emit compiler artifacts. Its determinism tests are therefore limited to schema-level guarantees that can be checked without implementing a compiler: canonical JSON key ordering is stable for fixture inputs, fixture diagnostics are ordered deterministically by the semantic validator, artifact hashes are constrained to explicit SHA-256 strings, and volatile fields such as wall-clock generation timestamps are rejected by the artifact schema.
+
+## Projected IR serialization
+
+For `dependency-algebra.projection.v1`, `projected_ir_hash` is SHA-256 over canonical UTF-8 JSON bytes of the projected IR payload. The payload omits `projected_ir_hash` itself and all projection diagnostics. Serialization uses lexicographically sorted object keys, compact separators, canonical set ordering, no trailing newline, and no timestamps, machine-local paths, random identifiers, runtime fields, authority fields, governance fields, proof fields, policy fields, execution fields, or mutation fields.

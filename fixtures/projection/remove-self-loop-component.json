@@ -1,0 +1,68 @@
+{
+  "schema_version": "dependency-algebra.projection.v1",
+  "topology_id": "remove-self-loop-component",
+  "normalized_ir_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "candidate_set": [
+    "loop"
+  ],
+  "projected_ir": {
+    "schema_version": "dependency-algebra.ir.v1",
+    "topology_id": "remove-self-loop-component",
+    "components": [
+      {
+        "id": "client",
+        "type": "entry",
+        "metadata": {},
+        "source": {
+          "source_id": "client"
+        }
+      },
+      {
+        "id": "db",
+        "type": "store",
+        "metadata": {},
+        "source": {
+          "source_id": "db"
+        }
+      }
+    ],
+    "edges": [],
+    "adjacency": {
+      "client": [],
+      "db": []
+    },
+    "reverse_adjacency": {
+      "client": [],
+      "db": []
+    },
+    "workloads": [
+      {
+        "id": "workload",
+        "roots": [
+          "client"
+        ],
+        "target": "db",
+        "candidate_set": [
+          "loop"
+        ],
+        "expected_classification": "NULL",
+        "source": {
+          "source_id": "workload"
+        }
+      }
+    ],
+    "normalized_ir_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+  },
+  "diagnostics": [
+    {
+      "code": "PROJECTION.COMPONENT_REMOVED",
+      "severity": "info",
+      "message": "component loop removed by complement projection",
+      "subject": {
+        "kind": "component",
+        "id": "loop"
+      }
+    }
+  ],
+  "projected_ir_hash": "sha256:736617d4f93717a51513fd6376b9ee74220b3939d988256848298f5767aea814"
+}
