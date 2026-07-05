@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dependency-algebra.local/schemas/artifact.schema.json",
+  "title": "Dependency Algebra Compiler Artifact v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "artifact_schema_version",
+    "source_topology_schema_version",
+    "compiler_version",
+    "input_hash",
+    "normalized_ir_hash",
+    "artifact_hash",
+    "classification",
+    "reachability_graph",
+    "dependency_lattice",
+    "failure_surface",
+    "redundancy_map",
+    "k_of_n_resilience_profile",
+    "annihilation_conditions",
+    "diagnostics",
+    "warnings",
+    "errors"
+  ],
+  "properties": {
+    "artifact_schema_version": { "const": "dependency-algebra.artifact.v1" },
+    "source_topology_schema_version": { "const": "dependency-algebra.topology.v1" },
+    "compiler_version": { "type": "string" },
+    "input_hash": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "normalized_ir_hash": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "artifact_hash": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "classification": { "$ref": "classification.schema.json" },
+    "reachability_graph": { "type": "object" },
+    "dependency_lattice": { "type": "array" },
+    "failure_surface": { "type": "array" },
+    "redundancy_map": { "type": "object" },
+    "k_of_n_resilience_profile": { "type": "object" },
+    "annihilation_conditions": { "type": "array" },
+    "diagnostics": { "type": "array" },
+    "warnings": { "type": "array" },
+    "errors": { "type": "array" }
+  }
+}

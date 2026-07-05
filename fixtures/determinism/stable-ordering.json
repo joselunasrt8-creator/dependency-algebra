@@ -1,0 +1,23 @@
+{
+  "workloads": [
+    {
+      "target": "database",
+      "roots": ["client"],
+      "id": "serve-api",
+      "expected_classification": "VALID",
+      "candidate_set": ["cache"]
+    }
+  ],
+  "topology_id": "stable-ordering",
+  "edges": [
+    { "to": "database", "from": "api", "id": "api-database" },
+    { "to": "api", "from": "client", "id": "client-api" }
+  ],
+  "schema_version": "dependency-algebra.topology.v1",
+  "components": [
+    { "id": "database" },
+    { "id": "cache" },
+    { "id": "api" },
+    { "id": "client" }
+  ]
+}
