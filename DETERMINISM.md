@@ -23,3 +23,7 @@ Compiler artifacts must be reproducible from the validated input topology and fr
 ## Replay safety
 
 Repeated validation of the same fixture must produce byte-identical structural outputs once artifact emission exists. The schema-only milestone verifies that no runtime execution, proof generation, authority token, or external mutation surface is present.
+
+## Milestone 1 test reflection
+
+Milestone 1 does not emit compiler artifacts. Its determinism tests are therefore limited to schema-level guarantees that can be checked without implementing a compiler: canonical JSON key ordering is stable for fixture inputs, fixture diagnostics are ordered deterministically by the semantic validator, artifact hashes are constrained to explicit SHA-256 strings, and volatile fields such as wall-clock generation timestamps are rejected by the artifact schema.

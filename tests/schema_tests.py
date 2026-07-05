@@ -6,10 +6,12 @@ from pathlib import Path
 
 if importlib.util.find_spec("jsonschema") is None:
     Draft202012Validator = None
-    RefResolver = None
+    Resource = None
+    Registry = None
     ValidationError = Exception
 else:
-    from jsonschema import Draft202012Validator, RefResolver, ValidationError
+    from jsonschema import Draft202012Validator, ValidationError
+    from referencing import Registry, Resource
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURES = ROOT / "fixtures"
@@ -30,14 +32,20 @@ def load_json(path: Path):
         return json.load(handle)
 
 
-def schema_store():
-    return {load_json(path)["$id"]: load_json(path) for path in SCHEMA_PATHS}
+def schema_documents():
+    return {schema["$id"]: schema for schema in (load_json(path) for path in SCHEMA_PATHS)}
+
+
+def schema_registry():
+    return Registry().with_resources(
+        (schema_id, Resource.from_contents(schema))
+        for schema_id, schema in schema_documents().items()
+    )
 
 
 def json_schema_validator(path: Path):
     schema = load_json(path)
-    resolver = RefResolver.from_schema(schema, store=schema_store())
-    return Draft202012Validator(schema, resolver=resolver)
+    return Draft202012Validator(schema, registry=schema_registry())
 
 
 def validate_topology(doc):
@@ -111,6 +119,53 @@ class JsonSchemaContractTests(unittest.TestCase):
             with self.subTest(classification=classification):
                 with self.assertRaises(ValidationError):
                     validator.validate(classification)
+
+
+    def test_artifact_schema_accepts_schema_only_reserved_outputs(self):
+        validator = json_schema_validator(SCHEMAS / "artifact.schema.json")
+        artifact = {
+            "artifact_schema_version": "dependency-algebra.artifact.v1",
+            "source_topology_schema_version": "dependency-algebra.topology.v1",
+            "compiler_version": "schema-only-milestone-1",
+            "input_hash": "sha256:" + "0" * 64,
+            "normalized_ir_hash": "sha256:" + "1" * 64,
+            "artifact_hash": "sha256:" + "2" * 64,
+            "classification": "VALID",
+            "reachability_graph": {},
+            "dependency_lattice": [],
+            "failure_surface": [],
+            "redundancy_map": {},
+            "k_of_n_resilience_profile": {},
+            "annihilation_conditions": [],
+            "diagnostics": [],
+            "warnings": [],
+            "errors": [],
+        }
+        validator.validate(artifact)
+
+    def test_artifact_schema_rejects_volatile_or_authority_fields(self):
+        validator = json_schema_validator(SCHEMAS / "artifact.schema.json")
+        artifact = {
+            "artifact_schema_version": "dependency-algebra.artifact.v1",
+            "source_topology_schema_version": "dependency-algebra.topology.v1",
+            "compiler_version": "schema-only-milestone-1",
+            "input_hash": "sha256:" + "0" * 64,
+            "normalized_ir_hash": "sha256:" + "1" * 64,
+            "artifact_hash": "sha256:" + "2" * 64,
+            "classification": "VALID",
+            "reachability_graph": {},
+            "dependency_lattice": [],
+            "failure_surface": [],
+            "redundancy_map": {},
+            "k_of_n_resilience_profile": {},
+            "annihilation_conditions": [],
+            "diagnostics": [],
+            "warnings": [],
+            "errors": [],
+            "generated_at": "2026-07-05T00:00:00Z",
+        }
+        with self.assertRaises(ValidationError):
+            validator.validate(artifact)
 
     def test_canonical_topology_fixtures_pass_json_schema_contract(self):
         paths = sorted((FIXTURES / "valid").glob("*.json")) + sorted((FIXTURES / "degraded").glob("*.json")) + sorted((FIXTURES / "null").glob("*.json")) + sorted((FIXTURES / "determinism").glob("*.json"))

@@ -54,6 +54,10 @@ A structurally valid path is a directed path that satisfies the topology schema 
 
 Invalid input is rejected with diagnostics; it is not classified as `NULL`.
 
+## Validation layers
+
+JSON Schema validation and custom semantic validation are separate contract layers. JSON Schema defines document shape, field types, allowed structural classifications, schema versions, hash formats, and closed artifact fields. Semantic validation handles graph-integrity rules that require cross-reference knowledge, including duplicate identifiers, unknown edge endpoints, unknown workload roots, unknown workload targets, and unknown candidate components. A topology can satisfy JSON Schema shape and still fail semantic validation.
+
 ## Deferred compiler outputs
 
 The compiler artifact schema reserves deterministic fields for:
