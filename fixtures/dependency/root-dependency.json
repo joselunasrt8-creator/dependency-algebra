@@ -7,8 +7,8 @@
   "dependency_result_hash": "sha256:29c0356220b6aa85566501125128d725a98b2e7ed2fc62e7d824a9feeb97136a",
   "diagnostics": [
     {
-      "code": "DEPENDENCY.TRUE",
-      "message": "candidate set is a structural dependency",
+      "code": "DEPENDENCY.EMPTY_REACHABILITY",
+      "message": "projected reachability is empty",
       "severity": "info",
       "subject": {
         "id": "checkout",
@@ -16,8 +16,8 @@
       }
     },
     {
-      "code": "DEPENDENCY.EMPTY_REACHABILITY",
-      "message": "projected reachability is empty",
+      "code": "DEPENDENCY.TRUE",
+      "message": "candidate set is a structural dependency",
       "severity": "info",
       "subject": {
         "id": "checkout",
