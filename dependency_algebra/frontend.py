@@ -121,6 +121,8 @@ def _normalize(document: dict[str, Any], source_id: str) -> dict[str, Any]:
         value.sort(key=lambda item: item["edge_id"])
     workloads = sorted(({"id": w["id"], "roots": sorted(set(w["roots"])), "target": w["target"], "candidate_set": sorted(set(w["candidate_set"])), "expected_classification": w["expected_classification"], "source": {"source_id": source_id}} for w in document["workloads"]), key=lambda w: w["id"])
     ir = {"schema_version": IR_SCHEMA_VERSION, "topology_id": document["topology_id"], "components": components, "edges": edges, "adjacency": adjacency, "reverse_adjacency": reverse, "workloads": workloads}
+    # Hash boundary: canonical normalized IR structural payload, excluding
+    # normalized_ir_hash because it is added only after hashing.
     ir["normalized_ir_hash"] = sha256_digest(ir)
     return ir
 

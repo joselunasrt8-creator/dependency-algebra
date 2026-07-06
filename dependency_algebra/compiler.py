@@ -32,6 +32,8 @@ def compile(source: str | bytes, *, source_id: str = "stdin", max_depth: int | N
         "dependency_result_hash": dependency["dependency_result_hash"],
         "classification": dependency["classification"],
     }
+    # Hash boundary: canonical hash receipt payload, excluding
+    # hash_receipt_hash because it is added only after hashing.
     receipt["hash_receipt_hash"] = sha256_digest(receipt)
     return receipt
 
