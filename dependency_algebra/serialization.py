@@ -90,7 +90,7 @@ def projected_ir_identity_hash(normalized_ir_hash: str, removed: tuple[str, ...]
 
 def projected_ir_to_dict(projection: ProjectedIR) -> dict[str, Any]:
     return {
-        "removed": set(projection.removed),
+        "removed": sorted(projection.removed),
         "adjacency": {key: [edge_to_dict(edge) for edge in edges] for key, edges in projection.adjacency.items()},
         "roots": list(projection.roots),
     }

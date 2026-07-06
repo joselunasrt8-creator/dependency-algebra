@@ -16,13 +16,13 @@ Compiler artifacts must be reproducible from the validated input topology and fr
 
 ## Hash boundaries
 
-- `input_hash` is computed from canonical topology JSON.
-- `normalized_ir_hash` is computed from canonical normalized IR JSON.
-- `artifact_hash` is computed from the canonical artifact with `artifact_hash` omitted.
+- `input_hash` is computed from the exact input bytes accepted by the compiler facade.
+- `normalized_ir_hash` is computed from canonical normalized IR JSON with `normalized_ir_hash` omitted.
+- `reachability_result_hash`, `dependency_result_hash`, and `hash_receipt_hash` are computed from their canonical serialized payloads with their own derived hash fields omitted.
 
 ## Replay safety
 
-Repeated validation of the same fixture must produce byte-identical structural outputs once artifact emission exists. The schema-only milestone verifies that no runtime execution, proof generation, authority token, or external mutation surface is present.
+Repeated compilation or validation of the same fixture must produce byte-identical structural outputs and hash receipts. The current implementation verifies that no runtime execution, proof generation, authority token, or external mutation surface is present.
 
 ## Normalized IR serialization
 

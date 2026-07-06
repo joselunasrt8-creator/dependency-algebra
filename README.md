@@ -12,7 +12,7 @@
 
 Its responsibility is to transform topology descriptions into deterministic structural-analysis artifacts through reproducible compiler passes.
 
-Current status: **compiler CLI harness milestone**, with a bounded structural compiler facade and thin argparse adapter added after contract stabilization.
+Current status: **architecture-closure compiler milestone**, with a bounded structural compiler facade, immutable typed analysis artifacts, canonical serialization utilities, deterministic hash receipt emission, and a thin argparse adapter.
 
 ---
 
@@ -74,20 +74,7 @@ Dependency Algebra does **not** own:
 
 ## Current Milestone
 
-This repository is currently in **Milestone 1 — Frozen Schemas and Canonical Fixtures**.
-
-The implemented surface is intentionally schema-only:
-
-- `SPEC.md`
-- `BOUNDARY.md`
-- `DETERMINISM.md`
-- `DEPENDENCY_PREDICATE_CONTRACT.md`
-- JSON schemas under `schemas/`
-- canonical fixtures under `fixtures/`
-- schema and boundary conformance tests under `tests/`
-- dependency predicate result schema and fixtures
-
-This milestone includes a structural compiler facade, analysis engine, canonical serialization utilities, and a thin CLI harness. It still includes no GitHub Action, ContinuityOS integration, proof system, authority module, runtime hook, governance surface, policy surface, or external-state mutation surface.
+This repository has advanced beyond the original schema-only milestone into an **architecture-closure compiler milestone**. The implemented surface includes frozen schemas and fixtures, a structural compiler facade, analysis engine, canonical serialization utilities, and a thin CLI harness, plus a frontend validator/normalizer, immutable typed compiler artifacts, structural projection, reachability, predicate and classification stages, deterministic hash receipt emission, and compatibility APIs. It still includes no GitHub Action, ContinuityOS integration, proof system, authority module, runtime hook, governance surface, policy surface, or external-state mutation surface.
 
 ### Compiler artifact boundaries
 
@@ -98,24 +85,28 @@ The compiler is organized as a pure artifact pipeline: `CanonicalIR` → `Projec
 ## Canonical Compiler Pipeline
 
 ```text
-Topology JSON
+Raw Input
         ↓
-Parser
+Frontend Validation
         ↓
-AST
+Canonical IR
         ↓
-IR
+Projection
         ↓
 Reachability
         ↓
-Complement Projection
+Predicate
         ↓
-Dependency Predicate
+AnalysisResult
         ↓
-Compiler Artifact
+Serialization
+        ↓
+Hash Receipt
+        ↓
+CLI / Public API
 ```
 
-This repository freezes the contracts required before implementing that compiler.
+The current implementation preserves compatibility wrappers at public boundaries while the core compiler stages exchange immutable typed artifacts.
 
 ---
 

@@ -33,6 +33,14 @@ class ArchitectureBoundaryTests(unittest.TestCase):
                 text = (ROOT / "dependency_algebra" / filename).read_text(encoding="utf-8")
                 self.assertIn(serializer, text)
 
+    def test_projected_ir_serialization_uses_canonical_removed_list(self):
+        from dependency_algebra.ir import ProjectedIR
+        from dependency_algebra.serialization import canonical_json_text, projected_ir_to_dict
+
+        document = projected_ir_to_dict(ProjectedIR(removed=frozenset({"b", "a"}), adjacency={}, roots=()))
+        self.assertEqual(document["removed"], ["a", "b"])
+        self.assertEqual(canonical_json_text(document), '{"adjacency":{},"removed":["a","b"],"roots":[]}')
+
 
 if __name__ == "__main__":
     unittest.main()
