@@ -53,3 +53,14 @@ The current compiler hashes only canonical UTF-8 JSON payloads produced with lex
 - `hash_receipt_hash`: hashes the compiler hash receipt payload: schema version, compiler version, exact input byte hash, `normalized_ir_hash`, `dependency_result_hash`, and classification. The `hash_receipt_hash` field itself is outside the boundary because it is appended after hashing.
 
 These boundaries intentionally exclude timestamps, machine-local paths, random values, runtime authority, governance fields, proof fields, policy fields, execution fields, mutation fields, and each hash's own derived value. Hash determinism depends on canonical serialization and on the normalized lexical ordering established before hashing.
+
+## Architecture boundary
+
+The implementation separates deterministic analysis from deterministic representation:
+
+- Structural analysis stages consume immutable typed artifacts and emit immutable typed artifacts.
+- Serialization functions own dictionary conversion, canonical JSON byte/text encoding, and derived SHA-256 artifact hashes.
+- Hash fields are appended after hashing their owning payload, and each hash boundary excludes its own derived value.
+- Compatibility wrappers preserve the existing public API by delegating typed artifacts to serialization instead of assembling JSON-shaped dictionaries inside analysis code.
+
+This preserves lexical ordering, traversal ordering, canonical serialization, and hash reproducibility while preventing analysis stages from depending on JSON encoding details.

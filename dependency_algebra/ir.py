@@ -21,7 +21,9 @@ class Edge:
         return cls(edge_id=value["edge_id"], component_id=value["component_id"])
 
     def to_dict(self) -> dict[str, str]:
-        return {"edge_id": self.edge_id, "component_id": self.component_id}
+        from dependency_algebra.serialization import edge_to_dict
+
+        return edge_to_dict(self)
 
 
 @dataclass(frozen=True, slots=True)
@@ -87,7 +89,9 @@ class TraversalEdge:
     target: str
 
     def to_dict(self) -> dict[str, str]:
-        return {"edge_id": self.edge_id, "from": self.source, "to": self.target}
+        from dependency_algebra.serialization import traversal_edge_to_dict
+
+        return traversal_edge_to_dict(self)
 
 
 @dataclass(frozen=True, slots=True)
@@ -101,16 +105,9 @@ class WorkloadReachability:
     traversal_edges: tuple[TraversalEdge, ...]
 
     def to_dict(self) -> dict[str, Any]:
-        return {
-            "workload_id": self.workload_id,
-            "roots": list(self.roots),
-            "target": self.target,
-            "reachable": self.reachable,
-            "reached_by": list(self.reached_by),
-            "visited_nodes": list(self.visited_nodes),
-            "traversal_edges": [edge.to_dict() for edge in self.traversal_edges],
-            "diagnostics": [],
-        }
+        from dependency_algebra.serialization import workload_reachability_to_dict
+
+        return workload_reachability_to_dict(self)
 
 
 @dataclass(frozen=True, slots=True)
@@ -125,15 +122,9 @@ class ReachabilityResult:
         return ReachabilityResult(self.schema_version, self.topology_id, self.normalized_ir_hash, self.results, value)
 
     def to_dict(self) -> dict[str, Any]:
-        doc = {
-            "schema_version": self.schema_version,
-            "topology_id": self.topology_id,
-            "normalized_ir_hash": self.normalized_ir_hash,
-            "results": [result.to_dict() for result in self.results],
-        }
-        if self.reachability_result_hash is not None:
-            doc["reachability_result_hash"] = self.reachability_result_hash
-        return doc
+        from dependency_algebra.serialization import reachability_result_to_dict
+
+        return reachability_result_to_dict(self)
 
 
 @dataclass(frozen=True, slots=True)
@@ -188,25 +179,29 @@ class DependencyResult:
         )
 
     def to_dict(self) -> dict[str, Any]:
-        doc = {
-            "schema_version": self.schema_version,
-            "workload_id": self.workload_id,
-            "normalized_ir_hash": self.normalized_ir_hash,
-            "roots": list(self.roots),
-            "target": self.target,
-            "candidate_set": list(self.candidate_set),
-            "projected_ir_hash": self.projected_ir_hash,
-            "reachability_result_hash": self.reachability_result_hash,
-            "dependency": self.dependency,
-            "dependency_reason": self.dependency_reason,
-            "reachable_after_projection": list(self.reachable_after_projection),
-            "diagnostics": [dict(item) for item in self.diagnostics],
-        }
-        if self.dependency_result_hash is not None:
-            doc["dependency_result_hash"] = self.dependency_result_hash
-        return doc
+        from dependency_algebra.serialization import dependency_result_to_dict
+
+        return dependency_result_to_dict(self)
 
 
 @dataclass(frozen=True, slots=True)
 class ClassificationResult:
     classification: str
+
+
+@dataclass(frozen=True, slots=True)
+class AnalysisResult:
+    schema_version: str
+    topology_id: str
+    normalized_ir_hash: str
+    classification: str
+    reachability: ReachabilityResult
+    dependencies: tuple[DependencyResult, ...]
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "dependencies", tuple(self.dependencies))
+
+    def to_dict(self) -> dict[str, Any]:
+        from dependency_algebra.serialization import analysis_result_to_dict
+
+        return analysis_result_to_dict(self)

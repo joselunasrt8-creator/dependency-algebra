@@ -28,9 +28,6 @@ def complement_projection(ir, workload):
 
     canonical = ir if isinstance(ir, CanonicalIR) else CanonicalIR.from_dict(ir)
     canonical_workload = workload if isinstance(workload, Workload) else Workload.from_dict(workload)
-    projection = project(canonical, canonical_workload)
-    return {
-        "removed": set(projection.removed),
-        "adjacency": {key: [edge.to_dict() for edge in edges] for key, edges in projection.adjacency.items()},
-        "roots": list(projection.roots),
-    }
+    from dependency_algebra.serialization import projected_ir_to_dict
+
+    return projected_ir_to_dict(project(canonical, canonical_workload))

@@ -6,7 +6,6 @@ from collections import deque
 from typing import Mapping
 
 from dependency_algebra.ir import CanonicalIR, Edge, ReachabilityResult, TraversalEdge, WorkloadReachability
-from dependency_algebra.serialization import sha256_digest
 
 
 def evaluate(ir: CanonicalIR, max_depth: int | None = None) -> ReachabilityResult:
@@ -29,20 +28,21 @@ def evaluate(ir: CanonicalIR, max_depth: int | None = None) -> ReachabilityResul
             visited_nodes=tuple(sorted(visited)),
             traversal_edges=tuple(sorted(traversed, key=lambda e: (e.edge_id, e.source, e.target))),
         ))
-    doc = ReachabilityResult(
+    return ReachabilityResult(
         schema_version="dependency-algebra.reachability.v1",
         topology_id=ir.topology_id,
         normalized_ir_hash=ir.normalized_ir_hash,
         results=tuple(results),
     )
-    return doc.with_hash(sha256_digest(doc.to_dict()))
 
 
 def reachability(ir, max_depth: int | None = None) -> dict:
     """Backward-compatible dict reachability wrapper."""
 
     canonical = ir if isinstance(ir, CanonicalIR) else CanonicalIR.from_dict(ir)
-    return evaluate(canonical, max_depth=max_depth).to_dict()
+    from dependency_algebra.serialization import reachability_result_to_dict
+
+    return reachability_result_to_dict(evaluate(canonical, max_depth=max_depth))
 
 
 def traverse_edges(
@@ -87,4 +87,6 @@ def traverse(adjacency, roots, max_depth: int | None):
         for key, edges in adjacency.items()
     }
     visited, traversed = traverse_edges(typed_adjacency, tuple(roots), max_depth)
-    return visited, [edge.to_dict() for edge in traversed]
+    from dependency_algebra.serialization import traversal_edge_to_dict
+
+    return visited, [traversal_edge_to_dict(edge) for edge in traversed]
