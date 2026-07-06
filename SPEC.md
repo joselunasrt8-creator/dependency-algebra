@@ -46,13 +46,13 @@ A structurally valid path is a directed path that satisfies the topology schema 
 
 ## Structural classifications
 
-`VALID`, `DEGRADED`, and `NULL` are structural-only classifications:
+`VALID`, `DEGRADED`, and `NULL` are structural-only classifications. The current implementation intentionally uses a simplified workload-aggregation contract:
 
-- `VALID`: required workload reachability remains structurally intact and no declared candidate dependency collapse is observed.
-- `DEGRADED`: at least one valid structural path remains, but redundancy or declared reachability is reduced.
-- `NULL`: no valid structural path remains for the workload after applying declared structural conditions.
+- `NULL`: all workloads evaluate as dependency.
+- `DEGRADED`: at least one workload evaluates as dependency, but not all.
+- `VALID`: no workload evaluates as dependency.
 
-Invalid input is rejected with diagnostics; it is not classified as `NULL`.
+This is the deterministic current implementation contract. Richer degradation metrics remain future work, and workload-relative degradation semantics are intentionally deferred. Invalid input is rejected with diagnostics; it is not classified as `NULL`.
 
 ## Validation layers
 

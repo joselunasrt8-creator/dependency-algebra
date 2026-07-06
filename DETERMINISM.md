@@ -41,3 +41,15 @@ Dependency predicate results are deterministic structural result objects. The id
 ## Projected IR serialization
 
 For `dependency-algebra.projection.v1`, `projected_ir_hash` is SHA-256 over canonical UTF-8 JSON bytes of the projected IR payload. The payload omits `projected_ir_hash` itself and all projection diagnostics. Serialization uses lexicographically sorted object keys, compact separators, canonical set ordering, no trailing newline, and no timestamps, machine-local paths, random identifiers, runtime fields, authority fields, governance fields, proof fields, policy fields, execution fields, or mutation fields.
+
+## Canonical hash boundary audit
+
+The current compiler hashes only canonical UTF-8 JSON payloads produced with lexicographically sorted object keys, compact separators, and no trailing newline. Derived hash fields are added after their owning payload is hashed, so no canonical hash includes itself.
+
+- `normalized_ir_hash`: hashes the normalized IR structural payload emitted by the frontend: schema version, topology id, normalized components, normalized edges, adjacency, reverse adjacency, and normalized workloads. The `normalized_ir_hash` field itself is outside the boundary because it is appended after hashing.
+- `reachability_result_hash`: hashes the reachability result payload emitted for the current analysis: schema version, topology id, `normalized_ir_hash`, and deterministic per-workload reachability results. The `reachability_result_hash` field itself is outside the boundary because it is appended after hashing.
+- `projected_ir_hash`: in the current compact engine implementation, hashes the canonical projection identity payload containing the source `normalized_ir_hash` and canonical removed component set. The payload contains no `projected_ir_hash`, so it cannot include itself.
+- `dependency_result_hash`: hashes the per-workload dependency result payload: schema version, workload identity, normalized IR identity, roots, target, candidate set, projected IR identity, projected reachability identity, dependency boolean, dependency reason, reachable-after-projection nodes, and deterministic diagnostics. The `dependency_result_hash` field itself is outside the boundary because it is appended after hashing.
+- `hash_receipt_hash`: hashes the compiler hash receipt payload: schema version, compiler version, exact input byte hash, `normalized_ir_hash`, `dependency_result_hash`, and classification. The `hash_receipt_hash` field itself is outside the boundary because it is appended after hashing.
+
+These boundaries intentionally exclude timestamps, machine-local paths, random values, runtime authority, governance fields, proof fields, policy fields, execution fields, mutation fields, and each hash's own derived value. Hash determinism depends on canonical serialization and on the normalized lexical ordering established before hashing.
