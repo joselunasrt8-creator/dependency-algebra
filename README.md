@@ -89,6 +89,10 @@ The implemented surface is intentionally schema-only:
 
 This milestone includes a structural compiler facade, analysis engine, canonical serialization utilities, and a thin CLI harness. It still includes no GitHub Action, ContinuityOS integration, proof system, authority module, runtime hook, governance surface, policy surface, or external-state mutation surface.
 
+### Compiler artifact boundaries
+
+The compiler is organized as a pure artifact pipeline: `CanonicalIR` → `Projection` → `Reachability` → `Predicate` → `Classification` → `Serialization` → `Hash Receipt`. Structural analysis stages produce immutable typed artifacts only. Serialization owns conversion to dictionaries and canonical JSON. Hashing owns artifact identity over serialized payload boundaries. Backward-compatible public functions and CLI output remain dictionary/JSON shaped by crossing the serialization boundary explicitly.
+
 ---
 
 ## Canonical Compiler Pipeline

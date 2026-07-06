@@ -8,7 +8,7 @@ from json import JSONDecodeError
 from typing import Any
 
 from dependency_algebra.diagnostics import CompilerDiagnosticException, diagnostic_document, make_diagnostic
-from dependency_algebra.serialization import sha256_digest
+from dependency_algebra.serialization import normalized_ir_hash
 
 TOPOLOGY_SCHEMA_VERSION = "dependency-algebra.topology.v1"
 IR_SCHEMA_VERSION = "dependency-algebra.ir.v1"
@@ -123,7 +123,7 @@ def _normalize(document: dict[str, Any], source_id: str) -> dict[str, Any]:
     ir = {"schema_version": IR_SCHEMA_VERSION, "topology_id": document["topology_id"], "components": components, "edges": edges, "adjacency": adjacency, "reverse_adjacency": reverse, "workloads": workloads}
     # Hash boundary: canonical normalized IR structural payload, excluding
     # normalized_ir_hash because it is added only after hashing.
-    ir["normalized_ir_hash"] = sha256_digest(ir)
+    ir["normalized_ir_hash"] = normalized_ir_hash(ir)
     return ir
 
 

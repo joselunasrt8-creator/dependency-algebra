@@ -7,7 +7,7 @@ from typing import Any
 from dependency_algebra.diagnostics import CompilerDiagnosticException
 from dependency_algebra.engine import analyze
 from dependency_algebra.frontend import parse_topology, validate_and_normalize
-from dependency_algebra.serialization import sha256_bytes, sha256_digest
+from dependency_algebra.serialization import hash_receipt_hash, sha256_bytes
 
 COMPILER_VERSION = "dependency-algebra.compiler.v1"
 
@@ -34,7 +34,7 @@ def compile(source: str | bytes, *, source_id: str = "stdin", max_depth: int | N
     }
     # Hash boundary: canonical hash receipt payload, excluding
     # hash_receipt_hash because it is added only after hashing.
-    receipt["hash_receipt_hash"] = sha256_digest(receipt)
+    receipt["hash_receipt_hash"] = hash_receipt_hash(receipt)
     return receipt
 
 __all__ = ["COMPILER_VERSION", "CompilerDiagnosticException", "compile"]
