@@ -1,5 +1,12 @@
 # SYNAPSE
 
+<p align="center">
+  <img
+    src="FEE00044-FF76-4C31-8D1C-E534773819C2.png"
+    alt="SYNAPSE — Structural Analysis Engine & Framework"
+    width="100%">
+</p>
+
 ## Structural Analysis Engine & Framework
 
 > From questions to trusted structural insight.
