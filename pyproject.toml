@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "synapse-structural-analysis"
+version = "0.1.0"
+description = "SYNAPSE structural analysis compiler and deterministic evidence CLI"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Proprietary" }
+authors = [{ name = "joselunasrt8-creator" }]
+dependencies = []
+
+[project.scripts]
+synapse = "dependency_algebra.cli:main"
+
+[tool.setuptools]
+packages = ["dependency_algebra"]
