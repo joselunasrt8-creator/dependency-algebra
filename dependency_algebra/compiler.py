@@ -8,6 +8,7 @@ from dependency_algebra.diagnostics import CompilerDiagnosticException
 from dependency_algebra.engine import analyze
 from dependency_algebra.frontend import TOPOLOGY_SCHEMA_VERSION, parse_topology, validate_and_normalize
 from dependency_algebra.serialization import hash_receipt_hash, sha256_bytes, sha256_digest
+from dependency_algebra.version import __version__
 
 COMPILER_VERSION = "dependency-algebra.compiler.v1"
 ARTIFACT_SCHEMA_VERSION = "dependency-algebra.artifact.v1"
@@ -23,6 +24,7 @@ def compile(source: str | bytes, *, source_id: str = "stdin", max_depth: int | N
     receipt = {
         "schema_version": "dependency-algebra.hash-receipt.v1",
         "compiler_version": COMPILER_VERSION,
+        "package_version": __version__,
         "input_hash": sha256_bytes(source_bytes),
         "normalized_ir_hash": ir["normalized_ir_hash"],
         "dependency_result_hash": dependency["dependency_result_hash"],
@@ -46,6 +48,7 @@ def compile_artifact(source: str | bytes, *, source_id: str = "stdin", max_depth
         "artifact_schema_version": ARTIFACT_SCHEMA_VERSION,
         "source_topology_schema_version": TOPOLOGY_SCHEMA_VERSION,
         "compiler_version": COMPILER_VERSION,
+        "package_version": __version__,
         "input_hash": sha256_bytes(source_bytes),
         "normalized_ir_hash": ir["normalized_ir_hash"],
         "classification": analysis["classification"],
