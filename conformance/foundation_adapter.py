@@ -8,8 +8,8 @@ import sys
 from pathlib import Path
 
 from dependency_algebra import compile_artifact
+from conformance.research_objects.discovery import discover
 from conformance.research_objects.registry import get_handler
-import conformance.research_objects.dependency_predicate
 
 
 def canonical_json(data):
@@ -51,6 +51,8 @@ def main():
         canonical_json(topology),
         source_id=fixture["fixture_id"],
     )
+
+    discover()
 
     projection = get_handler(
         fixture["research_object_id"]
