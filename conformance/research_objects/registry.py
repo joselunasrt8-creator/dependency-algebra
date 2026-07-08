@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
-from conformance.research_objects.dependency_predicate import (
-    dependency_projection,
-)
+_HANDLERS = {}
 
-HANDLERS = {
-    "definition.dependency.dependency-predicate": dependency_projection,
-}
+
+def register(research_object_id, handler):
+    _HANDLERS[research_object_id] = handler
+
+
+def get_handler(research_object_id):
+    return _HANDLERS[research_object_id]

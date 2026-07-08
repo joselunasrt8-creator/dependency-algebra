@@ -2,6 +2,11 @@
 
 from __future__ import annotations
 
+from conformance.research_objects.registry import register
+
+
+RESEARCH_OBJECT_ID = "definition.dependency.dependency-predicate"
+
 
 def dependency_projection(artifact):
     dependency = artifact["dependency_lattice"][0]
@@ -29,3 +34,6 @@ def dependency_projection(artifact):
             "is_dependency": is_dependency,
         },
     }
+
+
+register(RESEARCH_OBJECT_ID, dependency_projection)

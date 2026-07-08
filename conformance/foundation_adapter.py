@@ -8,7 +8,9 @@ import sys
 from pathlib import Path
 
 from dependency_algebra import compile_artifact
-from conformance.research_objects.registry import HANDLERS
+from conformance.research_objects.registry import get_handler
+import conformance.research_objects.dependency_predicate
+
 
 def canonical_json(data):
     return json.dumps(data, sort_keys=True, separators=(",", ":"))
@@ -50,9 +52,9 @@ def main():
         source_id=fixture["fixture_id"],
     )
 
-    projection = HANDLERS[
+    projection = get_handler(
         fixture["research_object_id"]
-    ](artifact)
+    )(artifact)
 
     evidence = {
         "repository": "SYNAPSE",
