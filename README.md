@@ -17,6 +17,10 @@ The Dependency Algebra Compiler is the first structural compiler implemented wit
 
 ---
 
+## Normative Specification
+
+[`SPEC.md`](SPEC.md) is the authoritative entry point for frozen SYNAPSE contracts, current compiler-stage boundaries, versioning rules, and ecosystem handoffs. Start there for the normative answer to what SYNAPSE owns, what it does not own, and how structural evidence leaves the system.
+
 ## Current Status
 
 SYNAPSE has reached the **architecture-closure compiler milestone** for its first reference implementation. The current implementation includes:
