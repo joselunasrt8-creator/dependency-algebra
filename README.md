@@ -204,3 +204,37 @@ All contracts are structural-analysis contracts only. They do not introduce gove
 - **Purpose:** Defines canonical `¬S` complement projection semantics.
 - **Boundary:** Complement projection is a deterministic, structural-only transformation from normalized IR plus a component candidate set to projected normalized IR. It removes candidate components and incident edges, preserves unaffected graph structure and workload definitions, defines `projected_ir_hash`, and emits structural diagnostics only.
 - **Current status:** Frozen planning contract from Issue #12.
+
+## Structural Analysis Foundation conformance
+
+The canonical conformance path is registration-driven and deterministic:
+
+```text
+Research object registration
+→ canonical fixture discovery
+→ fixture/schema validation
+→ adapter invocation
+→ canonical evidence validation
+→ deterministic normalization
+→ semantic comparison
+→ conformance classification
+→ deterministic report generation
+→ CI artifact preservation
+```
+
+Foundation-owned contracts live in this repository: research-object projection registration under `conformance/research_objects/`, canonical fixtures under `conformance/fixtures/`, conformance evidence/report schemas under `schemas/`, comparison rules in `conformance/compare.py`, orchestration in `conformance/runner.py`, and the command entry point `python -m conformance`. Participating repositories own their implementation-specific execution and adapters; adapters must not redefine canonical fixture semantics or comparison logic.
+
+Adapters are discovered from `conformance/adapters.json`. Each adapter command receives `--fixture`, `--output`, and `--adapter-id`, must leave the canonical fixture immutable, and must emit canonical evidence with implementation identity, version or commit provenance, research-object ID, fixture ID, normalized evidence, diagnostics, and explicit blocked/unsupported states. Raw implementation output is not canonical evidence until it validates against `schemas/conformance-evidence.schema.json` and passes fixture identity checks.
+
+The harness result taxonomy is `PASS`, `DRIFT`, `FAIL`, `BLOCKED`, `NOT_APPLICABLE`, and `UNOBSERVED`. `DRIFT` means validated evidence differs semantically from the canonical fixture expectation. `FAIL` means adapter execution or evidence validation failed. `BLOCKED`, `NOT_APPLICABLE`, and `UNOBSERVED` are never treated as `PASS`.
+
+Local validation commands:
+
+```bash
+python tools/validate_research_objects.py
+python tools/validate_canonical_fixtures.py
+python -m conformance
+python -m unittest discover -s tests -p '*_tests.py'
+```
+
+The deterministic machine-readable report is written to `conformance_artifacts/report.json`. CI validates research-object registration, validates canonical fixtures, runs the harness, runs the unit suite, and uploads the report as a workflow artifact. To add a research object, add a projection module that self-registers through the existing registry and add canonical fixtures. To add a repository adapter, add adapter metadata to the adapter registry; do not copy canonical comparison or fixture semantics into the participating repository.

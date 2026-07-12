@@ -1,0 +1,9 @@
+{
+  "schema_version": "structural-analysis-foundations.adapter-registry.v1",
+  "adapters": [
+    {
+      "adapter_id": "foundation-reference",
+      "command": ["{python}", "conformance/foundation_adapter.py"]
+    }
+  ]
+}

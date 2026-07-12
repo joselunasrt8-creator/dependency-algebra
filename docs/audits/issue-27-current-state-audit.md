@@ -117,3 +117,74 @@ This repository is not empty; Issue #27 should be implemented as a thin harness 
 ### Planning-only boundary
 
 No implementation beyond this audit report is performed here because the full Issue #27 acceptance text and remote `main` state are unavailable. The smallest safe next mutation is a bounded harness design patch once those acceptance criteria are visible.
+
+## Final implementation evidence
+
+### Implemented gaps
+
+- Added canonical fixture discovery and validation for foundation-owned research-object fixtures.
+- Added canonical conformance evidence and report schemas.
+- Added adapter registry loading that reuses the existing `conformance/foundation_adapter.py` command interface instead of creating a repository-specific comparison path.
+- Added deterministic semantic comparison over normalized evidence slices.
+- Added canonical conformance orchestration through `python -m conformance`.
+- Added deterministic report generation at `conformance_artifacts/report.json`.
+- Added replay validation for adapter evidence.
+- Extended existing CI workflows to validate research objects, validate canonical fixtures, run the harness, run tests, and upload the conformance report artifact.
+
+### Changed files
+
+- `conformance/__main__.py`
+- `conformance/adapters.json`
+- `conformance/adapters.py`
+- `conformance/compare.py`
+- `conformance/evidence.py`
+- `conformance/fixtures.py`
+- `conformance/fixtures/dependency-predicate.json`
+- `conformance/fixtures/reachability-profile.json`
+- `conformance/foundation_adapter.py`
+- `conformance/jsonutil.py`
+- `conformance/runner.py`
+- `conformance/status.py`
+- `schemas/conformance-evidence.schema.json`
+- `schemas/conformance-report.schema.json`
+- `tests/conformance_harness_tests.py`
+- `tests/schema_tests.py`
+- `tools/validate_research_objects.py`
+- `tools/validate_canonical_fixtures.py`
+- `.github/workflows/test.yml`
+- `.github/workflows/package.yml`
+- `README.md`
+
+### Validation commands
+
+- `python tools/validate_research_objects.py`
+- `python tools/validate_canonical_fixtures.py`
+- `python -m conformance`
+- `python -m unittest discover -s tests -p '*_tests.py'`
+
+### Test results
+
+All validation commands passed in this checkout after implementation.
+
+### CI path
+
+The existing `test.yml` and `package.yml` workflows now run research-object validation, canonical-fixture validation, the canonical conformance harness, and the unit suite. Both workflows preserve `conformance_artifacts/report.json` with `actions/upload-artifact` using `if: always()`.
+
+### Acceptance criteria now satisfied
+
+- Research-object registration and validation have an executable command.
+- Canonical fixture discovery and validation have an executable command.
+- Adapter invocation uses a registry-discovered command and the existing adapter CLI.
+- Canonical evidence validation occurs before semantic comparison.
+- Deterministic comparison detects drift over normalized evidence.
+- Harness classifications distinguish `PASS`, `DRIFT`, `FAIL`, `BLOCKED`, `NOT_APPLICABLE`, and `UNOBSERVED`.
+- Deterministic reports include aggregate summary, per-research-object status, per-adapter status, comparison matrix, mismatches, blockers, provenance, schema versions, fixture hashes, evidence hashes, and replay result.
+- CI validates foundation-owned contracts and preserves the machine-readable report artifact.
+
+### Remaining external repository work
+
+External participating repositories still need to add their own adapters and implementation-specific evidence generation. That work remains outside the Foundation boundary and is not required for Foundation-owned contract closure.
+
+### Final determination
+
+READY_TO_CLOSE for the foundation-owned Issue #27 conformance boundary. External repository adapter adoption may proceed separately through the canonical adapter registry and evidence schema.

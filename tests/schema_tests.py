@@ -29,6 +29,8 @@ SCHEMA_PATHS = [
     SCHEMAS / "reachability.schema.json",
     SCHEMAS / "dependency.schema.json",
     SCHEMAS / "projection.schema.json",
+    SCHEMAS / "conformance-evidence.schema.json",
+    SCHEMAS / "conformance-report.schema.json",
 ]
 TOPOLOGY_SCHEMA_PATH = SCHEMAS / "topology.schema.json"
 CLASSIFICATION_SCHEMA_PATH = SCHEMAS / "classification.schema.json"

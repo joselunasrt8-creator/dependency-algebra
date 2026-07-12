@@ -31,5 +31,21 @@ jobs:
           synapse compile --input fixtures/basic.json --output /tmp/synapse-artifact.json
           python -c "import dependency_algebra; print(dependency_algebra.__version__)"
 
+      - name: Validate research objects
+        run: python tools/validate_research_objects.py
+
+      - name: Validate canonical fixtures
+        run: python tools/validate_canonical_fixtures.py
+
+      - name: Run conformance harness
+        run: python -m conformance
+
       - name: Run tests
         run: python -m unittest discover -s tests -p '*_tests.py'
+
+      - name: Upload conformance report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: conformance-report
+          path: conformance_artifacts/report.json

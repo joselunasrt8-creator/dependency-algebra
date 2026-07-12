@@ -1,0 +1,33 @@
+{
+  "schema_version": "structural-analysis-foundations.conformance-fixture.v1",
+  "fixture_id": "canonical-dependency-predicate",
+  "research_object_id": "definition.dependency.dependency-predicate",
+  "deterministic_timestamp": "2026-01-01T00:00:00Z",
+  "input": {
+    "graph": {
+      "nodes": ["root", "bridge", "target"],
+      "edges": [
+        {"from": "root", "to": "bridge"},
+        {"from": "bridge", "to": "target"}
+      ]
+    },
+    "workload": {
+      "roots": ["root"],
+      "targets": ["target"],
+      "candidate_component_set": ["bridge"]
+    }
+  },
+  "expected_evidence": {
+    "canonical_outputs": {
+      "is_dependency": true
+    },
+    "structural_invariants": {
+      "reachable_before_removal": true,
+      "reachable_after_removal": false,
+      "removed_components": ["bridge"]
+    },
+    "required_diagnostics": [
+      {"code": "DEPENDENCY_PREDICATE_EVALUATED", "level": "info"}
+    ]
+  }
+}

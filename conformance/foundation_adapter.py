@@ -117,6 +117,7 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("--fixture", required=True)
     p.add_argument("--output", required=True)
+    p.add_argument("--adapter-id", default="foundation-reference")
     a = p.parse_args()
 
     fixture = json.loads(Path(a.fixture).read_text())
@@ -135,11 +136,11 @@ def main():
     )(artifact)
 
     evidence = {
-        "repository": "SYNAPSE",
-        "repository_url": "https://github.com/joselunasrt8-creator/SYNAPSE",
-        "commit_sha": "UNKNOWN",
-        "branch": "synapse-foundation-evidence-84",
+        "schema_version": "structural-analysis-foundations.conformance-evidence.v1",
+        "adapter_id": a.adapter_id,
+        "implementation": "foundation-reference",
         "implementation_version": artifact["package_version"],
+        "commit_sha": "UNKNOWN",
         "research_object_id": fixture["research_object_id"],
         "fixture_id": fixture["fixture_id"],
         "observed_execution_timestamp": "2026-01-01T00:00:00Z",

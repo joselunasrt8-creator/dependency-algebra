@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dependency-algebra.local/schemas/conformance-report.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "summary", "per_research_object", "per_adapter", "comparison_matrix", "mismatches", "blockers", "provenance", "schema_versions"],
+  "properties": {
+    "schema_version": {"const": "structural-analysis-foundations.conformance-report.v1"},
+    "summary": {"type": "object"},
+    "per_research_object": {"type": "object"},
+    "per_adapter": {"type": "object"},
+    "comparison_matrix": {"type": "array"},
+    "mismatches": {"type": "array"},
+    "blockers": {"type": "array"},
+    "provenance": {"type": "object"},
+    "schema_versions": {"type": "object"}
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dependency-algebra.local/schemas/conformance-evidence.schema.json",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["schema_version", "adapter_id", "implementation", "implementation_version", "research_object_id", "fixture_id", "semantic_result", "canonical_outputs", "provenance", "diagnostics"],
+  "properties": {
+    "schema_version": {"const": "structural-analysis-foundations.conformance-evidence.v1"},
+    "adapter_id": {"type": "string", "minLength": 1},
+    "implementation": {"type": "string", "minLength": 1},
+    "implementation_version": {"type": "string", "minLength": 1},
+    "research_object_id": {"type": "string", "minLength": 1},
+    "fixture_id": {"type": "string", "minLength": 1},
+    "semantic_result": {"enum": ["PASS", "DRIFT", "FAIL", "BLOCKED", "NOT_APPLICABLE", "UNOBSERVED"]},
+    "canonical_outputs": {"type": "object"},
+    "provenance": {"type": "object"},
+    "diagnostics": {"type": "array"}
+  }
+}

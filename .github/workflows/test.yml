@@ -19,5 +19,21 @@ jobs:
       - name: Install dev dependencies
         run: python -m pip install -r requirements-dev.txt
 
+      - name: Validate research objects
+        run: python tools/validate_research_objects.py
+
+      - name: Validate canonical fixtures
+        run: python tools/validate_canonical_fixtures.py
+
+      - name: Run conformance harness
+        run: python -m conformance
+
       - name: Run tests
         run: python -m unittest discover -s tests -p '*_tests.py'
+
+      - name: Upload conformance report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: conformance-report
+          path: conformance_artifacts/report.json

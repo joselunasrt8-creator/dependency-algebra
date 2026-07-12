@@ -1,0 +1,61 @@
+{
+  "schema_version": "structural-analysis-foundations.conformance-fixture.v1",
+  "fixture_id": "canonical-reachability-profile",
+  "research_object_id": "concept.structural-observation.reachability-profile",
+  "deterministic_timestamp": "2026-01-01T00:00:00Z",
+  "input": {
+    "structural_object": {
+      "nodes": ["target-b", "root-b", "target-a", "root-a"],
+      "relations": [
+        {"from": "root-b", "to": "target-b"},
+        {"from": "root-a", "to": "target-a"}
+      ]
+    },
+    "workload": {
+      "roots": ["root-b", "root-a"],
+      "targets": ["target-b", "target-a"]
+    }
+  },
+  "expected_evidence": {
+    "canonical_outputs": {
+      "nodes": ["root-a", "root-b", "target-a", "target-b"],
+      "relations": [
+        {"from": "root-a", "to": "target-a"},
+        {"from": "root-b", "to": "target-b"}
+      ],
+      "roots": ["root-a", "root-b"],
+      "targets": ["target-a", "target-b"],
+      "reachable_pairs": [
+        {"root": "root-a", "target": "target-a"},
+        {"root": "root-b", "target": "target-b"}
+      ],
+      "unreachable_pairs": [
+        {"root": "root-a", "target": "target-b"},
+        {"root": "root-b", "target": "target-a"}
+      ],
+      "root_coverage": [
+        {"root": "root-a", "reachable_target_count": 1, "unreachable_target_count": 1, "target_count": 2},
+        {"root": "root-b", "reachable_target_count": 1, "unreachable_target_count": 1, "target_count": 2}
+      ],
+      "target_coverage": [
+        {"target": "target-a", "reachable_root_count": 1, "unreachable_root_count": 1, "root_count": 2},
+        {"target": "target-b", "reachable_root_count": 1, "unreachable_root_count": 1, "root_count": 2}
+      ],
+      "reachability_density": 0.5
+    },
+    "structural_invariants": {
+      "classified_union_equals_roots_cross_targets": true,
+      "density_consistent": true,
+      "every_root_target_pair_classified": true,
+      "pair_counts_consistent": true,
+      "reachable_unreachable_disjoint": true,
+      "root_coverage_counts_correct": true,
+      "target_coverage_counts_correct": true
+    },
+    "required_diagnostics": [
+      {"code": "REACHABILITY_PROFILE_EVALUATED", "level": "info"},
+      {"code": "REACHABILITY_INVARIANTS_VERIFIED", "level": "info"},
+      {"code": "CANONICAL_ORDERING_CONFIRMED", "level": "info"}
+    ]
+  }
+}
