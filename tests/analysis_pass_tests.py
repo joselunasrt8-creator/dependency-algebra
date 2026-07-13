@@ -6,8 +6,11 @@ from dependency_algebra.analysis import (
     CANONICAL_IR_INPUT_CONTRACT,
     CORE_ANALYSIS_ID,
     CORE_ANALYSIS_VERSION,
+    DEPENDENCY_ANALYSIS_ID,
+    DEPENDENCY_ANALYSIS_VERSION,
     AnalysisPass,
     CoreStructuralAnalysisPass,
+    DependencyAnalysisPass,
 )
 from dependency_algebra.ir import CanonicalIR, Edge, Workload
 
@@ -22,8 +25,17 @@ class AnalysisPassTests(unittest.TestCase):
         self.assertEqual(analysis_pass.accepted_input, CANONICAL_IR_INPUT_CONTRACT)
         self.assertEqual(analysis_pass.output_contract_identity, ANALYSIS_RESULT_OUTPUT_CONTRACT)
 
+    def test_dependency_pass_has_stable_identity(self):
+        analysis_pass = DependencyAnalysisPass()
+
+        self.assertIsInstance(analysis_pass, AnalysisPass)
+        self.assertEqual(analysis_pass.analysis_id, DEPENDENCY_ANALYSIS_ID)
+        self.assertEqual(analysis_pass.analysis_version, DEPENDENCY_ANALYSIS_VERSION)
+        self.assertEqual(analysis_pass.accepted_input, CANONICAL_IR_INPUT_CONTRACT)
+        self.assertEqual(analysis_pass.output_contract_identity, ANALYSIS_RESULT_OUTPUT_CONTRACT)
+
     def test_deterministic_configuration_is_immutable_and_sorted(self):
-        analysis_pass = CoreStructuralAnalysisPass(max_depth=4)
+        analysis_pass = DependencyAnalysisPass(max_depth=4)
 
         self.assertIsInstance(analysis_pass.deterministic_configuration, MappingProxyType)
         self.assertEqual(tuple(analysis_pass.deterministic_configuration.items()), (("max_depth", 4),))
@@ -31,7 +43,7 @@ class AnalysisPassTests(unittest.TestCase):
             analysis_pass.deterministic_configuration["max_depth"] = 5
 
     def test_metadata_is_immutable(self):
-        metadata = CoreStructuralAnalysisPass().metadata
+        metadata = DependencyAnalysisPass().metadata
 
         with self.assertRaises(AttributeError):
             metadata.analysis_id = "changed"
@@ -39,15 +51,16 @@ class AnalysisPassTests(unittest.TestCase):
             metadata.deterministic_configuration["new"] = "value"
 
     def test_specification_references_are_explicit_and_immutable(self):
-        analysis_pass = CoreStructuralAnalysisPass()
+        analysis_pass = DependencyAnalysisPass()
 
         self.assertEqual(
             analysis_pass.specification_references,
             (
-                "SPEC.md#dependency-algebra",
-                "DEPENDENCY_PREDICATE_CONTRACT.md",
-                "REACHABILITY_CONTRACT.md",
-                "DETERMINISM.md",
+                "SPEC.md",
+                "DEPENDENCY_PREDICATE_CONTRACT.md#dependency-predicate-definition",
+                "REACHABILITY_CONTRACT.md#reachability-definition",
+                "DETERMINISM.md#dependency-predicate-determinism",
+                "registry/traceability.json",
             ),
         )
         self.assertIsInstance(analysis_pass.specification_references, tuple)
@@ -61,7 +74,7 @@ class AnalysisPassTests(unittest.TestCase):
             workloads=(Workload("workload", ("root",), "target", ("root",)),),
         )
 
-        result = CoreStructuralAnalysisPass().execute(ir)
+        result = DependencyAnalysisPass().execute(ir)
 
         self.assertEqual(result.schema_version, "dependency-algebra.analysis.v1")
         self.assertEqual(result.topology_id, "analysis-pass-test")
