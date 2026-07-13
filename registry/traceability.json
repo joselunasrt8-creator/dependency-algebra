@@ -125,11 +125,11 @@
       "requirement": "Dependency(S, W) is true exactly when Reach(W | not S) is empty.",
       "implementation_path": "dependency_algebra/predicate.py",
       "implementation_symbol": "evaluate",
-      "test_path": "tests/schema_tests.py",
+      "test_path": "tests/dependency_predicate_tests.py",
       "artifact_or_output": "dependency-algebra.dependency.v1",
-      "status": "PARTIAL",
-      "evidence": "Predicate implementation applies projection then reachability; fixture/schema coverage exists for dependency result vectors.",
-      "exact_gap": "Semantic tests are not exhaustive across every dependency fixture."
+      "status": "VERIFIED",
+      "evidence": "Executable evaluator conformance tests directly construct CanonicalIR, Workload, and Edge objects and cover dependency true, dependency false, bridge removal, redundancy, root removal, target removal, multiple candidates, and deterministic repeated evaluation.",
+      "exact_gap": ""
     },
     {
       "spec_ref": "SPEC.md#3-canonical-terminology",
