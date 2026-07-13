@@ -22,6 +22,49 @@ def run_cli(*args):
     )
 
 
+def write_topology(path, *, workload_target="database", candidate_set=None):
+    if candidate_set is None:
+        candidate_set = ["cache"]
+    path.write_text(
+        json.dumps(
+            {
+                "schema_version": "dependency-algebra.topology.v1",
+                "topology_id": "unresolved-reference-regression",
+                "components": [
+                    {"id": "client", "type": "root"},
+                    {"id": "api", "type": "service"},
+                    {"id": "database", "type": "state"},
+                    {"id": "cache", "type": "optional"},
+                ],
+                "edges": [
+                    {"id": "client-api", "from": "client", "to": "api"},
+                    {"id": "api-database", "from": "api", "to": "database"},
+                ],
+                "workloads": [
+                    {
+                        "id": "serve-api",
+                        "roots": ["client"],
+                        "target": workload_target,
+                        "candidate_set": candidate_set,
+                        "expected_classification": "VALID",
+                    }
+                ],
+            },
+            sort_keys=True,
+        ),
+        encoding="utf-8",
+    )
+
+
+def assert_machine_readable_diagnostic(testcase, result, output, expected_code):
+    testcase.assertEqual(result.returncode, 1)
+    testcase.assertEqual(result.stdout, "")
+    diagnostic = json.loads(result.stderr)
+    codes = [item["code"] for item in diagnostic["diagnostics"]]
+    testcase.assertIn(expected_code, codes)
+    testcase.assertFalse(output.exists())
+
+
 class CompilerCliIntegrationTests(unittest.TestCase):
     def test_synapse_compile_writes_artifact_success(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -52,6 +95,22 @@ class CompilerCliIntegrationTests(unittest.TestCase):
         diagnostic = json.loads(result.stderr)
         codes = [item["code"] for item in diagnostic["diagnostics"]]
         self.assertIn("NORMALIZE.UNRESOLVED_EDGE_TO", codes)
+
+    def test_unresolved_workload_target_exit_code_one_without_artifact(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            source = Path(tmp) / "unresolved-workload-target.json"
+            output = Path(tmp) / "artifact.json"
+            write_topology(source, workload_target="missing-target")
+            result = run_cli("compile", "--input", str(source), "--output", str(output))
+            assert_machine_readable_diagnostic(self, result, output, "NORMALIZE.UNRESOLVED_WORKLOAD_TARGET")
+
+    def test_unresolved_candidate_exit_code_one_without_artifact(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            source = Path(tmp) / "unresolved-candidate.json"
+            output = Path(tmp) / "artifact.json"
+            write_topology(source, candidate_set=["missing-candidate"])
+            result = run_cli("compile", "--input", str(source), "--output", str(output))
+            assert_machine_readable_diagnostic(self, result, output, "NORMALIZE.UNRESOLVED_CANDIDATE")
 
     def test_duplicate_component_exit_code_one(self):
         with tempfile.TemporaryDirectory() as tmp:
