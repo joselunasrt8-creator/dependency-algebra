@@ -4,7 +4,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from dependency_algebra.analysis import AnalysisPass, CORE_ANALYSIS_ID, CoreStructuralAnalysisPass
+from dependency_algebra.analysis import (
+    CORE_ANALYSIS_ID,
+    DEPENDENCY_ANALYSIS_ID,
+    AnalysisPass,
+    CoreStructuralAnalysisPass,
+    DependencyAnalysisPass,
+)
 
 
 class AnalysisRegistryError(ValueError):
@@ -56,7 +62,7 @@ class AnalysisRegistry:
 def core_analysis_registry() -> AnalysisRegistry:
     """Create the repository-defined deterministic core analysis registry."""
 
-    return AnalysisRegistry((CoreStructuralAnalysisPass(),))
+    return AnalysisRegistry((CoreStructuralAnalysisPass(), DependencyAnalysisPass()))
 
 
 __all__ = [
@@ -65,5 +71,6 @@ __all__ = [
     "DuplicateAnalysisRegistrationError",
     "UnknownAnalysisPassError",
     "CORE_ANALYSIS_ID",
+    "DEPENDENCY_ANALYSIS_ID",
     "core_analysis_registry",
 ]

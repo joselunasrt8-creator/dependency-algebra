@@ -165,6 +165,17 @@
       "exact_gap": ""
     },
     {
+      "spec_ref": "DEPENDENCY_PREDICATE_CONTRACT.md#predicate-equality-semantics",
+      "requirement": "Issue #116: registered dependency analysis pass execution must be behaviorally equivalent to legacy dependency analysis execution for canonical fixtures.",
+      "implementation_path": "dependency_algebra/analysis.py",
+      "implementation_symbol": "DependencyAnalysisPass",
+      "test_path": "tests/dependency_pass_equivalence_tests.py",
+      "artifact_or_output": "dependency-algebra.analysis.v1 and dependency-algebra.artifact.v1 JSON",
+      "status": "VERIFIED",
+      "evidence": "Equivalence tests compare legacy and registered dependency classification, workload ordering, diagnostics, reachable sets, dependency hashes, normalized IR hash, AnalysisResult serialization, repeated execution, and compiler artifact serialization across canonical fixtures.",
+      "exact_gap": ""
+    },
+    {
       "spec_ref": "SPEC.md#7-frozen-contract-index",
       "requirement": "Every normative contract area is indexed and traceable to implementation, tests, artifacts, and status.",
       "implementation_path": "scripts/check_traceability.py",

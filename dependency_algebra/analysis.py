@@ -11,6 +11,8 @@ from dependency_algebra.ir import AnalysisResult, CanonicalIR
 
 CORE_ANALYSIS_ID = "dependency-algebra.core-structural-analysis"
 CORE_ANALYSIS_VERSION = "1"
+DEPENDENCY_ANALYSIS_ID = "dependency-algebra.dependency-analysis"
+DEPENDENCY_ANALYSIS_VERSION = "1"
 CANONICAL_IR_INPUT_CONTRACT = "dependency_algebra.ir.CanonicalIR"
 ANALYSIS_RESULT_OUTPUT_CONTRACT = "dependency_algebra.ir.AnalysisResult:dependency-algebra.analysis.v1"
 
@@ -72,8 +74,8 @@ class AnalysisPass(Protocol):
 
 
 @dataclass(frozen=True, slots=True)
-class CoreStructuralAnalysisPass:
-    """Adapter exposing the existing structural analysis implementation as a deterministic pass."""
+class DependencyAnalysisPass:
+    """Adapter exposing the existing dependency analysis implementation as a deterministic pass."""
 
     max_depth: int | None = None
 
@@ -83,15 +85,16 @@ class CoreStructuralAnalysisPass:
         if self.max_depth is not None:
             configuration["max_depth"] = self.max_depth
         return AnalysisPassMetadata(
-            analysis_id=CORE_ANALYSIS_ID,
-            analysis_version=CORE_ANALYSIS_VERSION,
+            analysis_id=DEPENDENCY_ANALYSIS_ID,
+            analysis_version=DEPENDENCY_ANALYSIS_VERSION,
             accepted_input=CANONICAL_IR_INPUT_CONTRACT,
             deterministic_configuration=configuration,
             specification_references=(
                 "SPEC.md#dependency-algebra",
-                "DEPENDENCY_PREDICATE_CONTRACT.md",
-                "REACHABILITY_CONTRACT.md",
-                "DETERMINISM.md",
+                "DEPENDENCY_PREDICATE_CONTRACT.md#dependency-predicate-definition",
+                "REACHABILITY_CONTRACT.md#reachability-semantics",
+                "DETERMINISM.md#dependency-predicate-results",
+                "registry/traceability.json#dependency-analysis-pass-equivalence",
             ),
             output_contract_identity=ANALYSIS_RESULT_OUTPUT_CONTRACT,
         )
@@ -121,6 +124,30 @@ class CoreStructuralAnalysisPass:
         return self.metadata.output_contract_identity
 
     def execute(self, ir: CanonicalIR) -> AnalysisResult:
-        from dependency_algebra.engine import analyze_artifact
+        from dependency_algebra.engine import analyze_artifact_legacy
 
-        return analyze_artifact(ir, max_depth=self.max_depth)
+        return analyze_artifact_legacy(ir, max_depth=self.max_depth)
+
+
+@dataclass(frozen=True, slots=True)
+class CoreStructuralAnalysisPass(DependencyAnalysisPass):
+    """Compatibility alias for the first core structural pass identity."""
+
+    @property
+    def metadata(self) -> AnalysisPassMetadata:
+        configuration: dict[str, Any] = {}
+        if self.max_depth is not None:
+            configuration["max_depth"] = self.max_depth
+        return AnalysisPassMetadata(
+            analysis_id=CORE_ANALYSIS_ID,
+            analysis_version=CORE_ANALYSIS_VERSION,
+            accepted_input=CANONICAL_IR_INPUT_CONTRACT,
+            deterministic_configuration=configuration,
+            specification_references=(
+                "SPEC.md#dependency-algebra",
+                "DEPENDENCY_PREDICATE_CONTRACT.md",
+                "REACHABILITY_CONTRACT.md",
+                "DETERMINISM.md",
+            ),
+            output_contract_identity=ANALYSIS_RESULT_OUTPUT_CONTRACT,
+        )

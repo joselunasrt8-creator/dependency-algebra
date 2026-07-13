@@ -5,14 +5,15 @@ from __future__ import annotations
 from typing import Any
 
 from dependency_algebra.classification import classify_result
+from dependency_algebra.analysis import DEPENDENCY_ANALYSIS_ID
 from dependency_algebra.ir import AnalysisResult, CanonicalIR
 from dependency_algebra.predicate import evaluate as evaluate_dependency
 from dependency_algebra.reachability import evaluate as evaluate_reachability
 from dependency_algebra.serialization import analysis_result_to_dict
 
 
-def analyze_artifact(ir: CanonicalIR, max_depth: int | None = None) -> AnalysisResult:
-    """Analyze normalized IR and return an immutable structural artifact."""
+def analyze_artifact_legacy(ir: CanonicalIR, max_depth: int | None = None) -> AnalysisResult:
+    """Legacy dependency analysis execution path kept as the equivalence oracle."""
 
     canonical_ir = ir
     reachability_result = evaluate_reachability(canonical_ir, max_depth=max_depth)
@@ -29,6 +30,22 @@ def analyze_artifact(ir: CanonicalIR, max_depth: int | None = None) -> AnalysisR
         reachability=reachability_result,
         dependencies=dependencies,
     )
+
+
+def analyze_artifact_registered(ir: CanonicalIR, max_depth: int | None = None) -> AnalysisResult:
+    """Analyze normalized IR through the registered dependency analysis pass."""
+
+    from dependency_algebra.analysis import DependencyAnalysisPass
+    from dependency_algebra.analysis_registry import AnalysisRegistry
+
+    registry = AnalysisRegistry((DependencyAnalysisPass(max_depth=max_depth),))
+    return registry.get(DEPENDENCY_ANALYSIS_ID).execute(ir)
+
+
+def analyze_artifact(ir: CanonicalIR, max_depth: int | None = None) -> AnalysisResult:
+    """Analyze normalized IR through the registered dependency analysis pass."""
+
+    return analyze_artifact_registered(ir, max_depth=max_depth)
 
 
 def analyze(ir: dict[str, Any], max_depth: int | None = None) -> dict[str, Any]:

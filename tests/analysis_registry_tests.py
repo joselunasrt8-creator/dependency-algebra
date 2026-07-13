@@ -1,6 +1,12 @@
 import unittest
 
-from dependency_algebra.analysis import AnalysisPassMetadata, CORE_ANALYSIS_ID, CoreStructuralAnalysisPass
+from dependency_algebra.analysis import (
+    CORE_ANALYSIS_ID,
+    DEPENDENCY_ANALYSIS_ID,
+    AnalysisPassMetadata,
+    CoreStructuralAnalysisPass,
+    DependencyAnalysisPass,
+)
 from dependency_algebra.analysis_registry import (
     AnalysisRegistry,
     DuplicateAnalysisRegistrationError,
@@ -56,8 +62,9 @@ class AnalysisRegistryTests(unittest.TestCase):
     def test_core_registration_and_lookup(self):
         registry = core_analysis_registry()
 
-        self.assertEqual(registry.analysis_ids(), (CORE_ANALYSIS_ID,))
+        self.assertEqual(registry.analysis_ids(), (CORE_ANALYSIS_ID, DEPENDENCY_ANALYSIS_ID))
         self.assertIsInstance(registry.get(CORE_ANALYSIS_ID), CoreStructuralAnalysisPass)
+        self.assertIsInstance(registry.get(DEPENDENCY_ANALYSIS_ID), DependencyAnalysisPass)
 
     def test_duplicate_registration_is_rejected(self):
         with self.assertRaises(DuplicateAnalysisRegistrationError):
@@ -78,7 +85,7 @@ class AnalysisRegistryTests(unittest.TestCase):
     def test_repeated_creation_yields_identical_registry_state(self):
         states = tuple(core_analysis_registry().analysis_ids() for _ in range(5))
 
-        self.assertEqual(states, ((CORE_ANALYSIS_ID,),) * 5)
+        self.assertEqual(states, ((CORE_ANALYSIS_ID, DEPENDENCY_ANALYSIS_ID),) * 5)
 
 
 if __name__ == "__main__":
