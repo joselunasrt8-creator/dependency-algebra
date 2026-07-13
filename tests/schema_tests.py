@@ -29,6 +29,7 @@ SCHEMA_PATHS = [
     SCHEMAS / "reachability.schema.json",
     SCHEMAS / "dependency.schema.json",
     SCHEMAS / "projection.schema.json",
+    SCHEMAS / "structural-evidence.schema.json",
 ]
 TOPOLOGY_SCHEMA_PATH = SCHEMAS / "topology.schema.json"
 CLASSIFICATION_SCHEMA_PATH = SCHEMAS / "classification.schema.json"
@@ -160,6 +161,10 @@ class JsonSchemaContractTests(unittest.TestCase):
             },
         }
         validator.validate(artifact)
+
+    def test_structural_evidence_schema_accepts_v2_fixture(self):
+        validator = json_schema_validator(SCHEMAS / "structural-evidence.schema.json")
+        validator.validate(load_json(FIXTURES / "structural_evidence" / "minimal-valid-v2.json"))
 
     def test_artifact_schema_rejects_volatile_or_authority_fields(self):
         validator = json_schema_validator(SCHEMAS / "artifact.schema.json")

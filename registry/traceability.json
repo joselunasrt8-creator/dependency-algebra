@@ -185,6 +185,87 @@
       "status": "VERIFIED",
       "evidence": "Traceability validator checks spec refs, implementation/test paths, symbols, statuses, and missing correspondence failure behavior.",
       "exact_gap": ""
+    },
+    {
+      "spec_ref": "docs/analysis-engine-p0-adr.md#analysis-pass",
+      "requirement": "AnalysisPass exposes stable registered-analysis identity, version, accepted input, deterministic configuration, specification references, and output contract metadata.",
+      "implementation_path": "dependency_algebra/analysis.py",
+      "implementation_symbol": "AnalysisPass",
+      "test_path": "tests/analysis_pass_tests.py",
+      "artifact_or_output": "registered dependency-analysis metadata used by dependency-algebra.structural-evidence.v2",
+      "status": "VERIFIED",
+      "evidence": "Analysis pass tests exercise metadata and structural evidence tests bind the metadata into the v2 artifact envelope.",
+      "exact_gap": ""
+    },
+    {
+      "spec_ref": "docs/dependency-pass-compatibility-report.md#implementation-lineage",
+      "requirement": "DependencyAnalysisPass is the canonical registered dependency analysis implementation and remains equivalent to the legacy oracle from Issue #116.",
+      "implementation_path": "dependency_algebra/analysis.py",
+      "implementation_symbol": "DependencyAnalysisPass",
+      "test_path": "tests/dependency_pass_equivalence_tests.py",
+      "artifact_or_output": "dependency-algebra.analysis.v1 and v1 compatibility artifact bytes",
+      "status": "VERIFIED",
+      "evidence": "#116 equivalence tests remain mapped and structural evidence tests consume DependencyAnalysisPass without changing legacy artifact output.",
+      "exact_gap": ""
+    },
+    {
+      "spec_ref": "docs/dependency-pass-compatibility-report.md#implementation-lineage",
+      "requirement": "Canonical registry lookup fails closed for unknown analysis IDs and returns registered analysis IDs deterministically.",
+      "implementation_path": "dependency_algebra/analysis_registry.py",
+      "implementation_symbol": "core_analysis_registry",
+      "test_path": "tests/analysis_registry_tests.py",
+      "artifact_or_output": "registered analysis lookup for evidence emission",
+      "status": "VERIFIED",
+      "evidence": "Registry tests cover deterministic lookup; structural evidence tests cover unknown-analysis failure at artifact emission.",
+      "exact_gap": ""
+    },
+    {
+      "spec_ref": "docs/issue-78-artifact-compatibility.md#decision",
+      "requirement": "Registered-analysis structural evidence uses an explicit versioned successor rather than silently changing dependency-algebra.artifact.v1.",
+      "implementation_path": "dependency_algebra/evidence.py",
+      "implementation_symbol": "compile_structural_evidence_artifact",
+      "test_path": "tests/structural_evidence_tests.py",
+      "artifact_or_output": "dependency-algebra.structural-evidence.v2",
+      "status": "VERIFIED",
+      "evidence": "The v2 API emits the registered dependency-analysis envelope while compatibility tests assert v1 artifacts remain stable and do not include v2 schema identity.",
+      "exact_gap": "",
+      "schema_path": "schemas/structural-evidence.schema.json",
+      "fixture_path": "fixtures/structural_evidence/minimal-valid-v2.json"
+    },
+    {
+      "spec_ref": "docs/issue-78-artifact-compatibility.md#compatibility-and-migration-rules",
+      "requirement": "Result validation confirms registered identity, input identity, required specification references, deterministic configuration, output contract identity, and canonical result hash before evidence emission.",
+      "implementation_path": "dependency_algebra/evidence.py",
+      "implementation_symbol": "validate_analysis_result",
+      "test_path": "tests/structural_evidence_tests.py",
+      "artifact_or_output": "dependency-algebra.result-validation.v1",
+      "status": "VERIFIED",
+      "evidence": "Structural evidence tests cover valid emission and fail-closed unknown analysis, malformed metadata, hash mismatch, input mismatch, output-contract mismatch, and malformed payload cases.",
+      "exact_gap": ""
+    },
+    {
+      "spec_ref": "DETERMINISM.md#hash-boundaries",
+      "requirement": "Canonical result hashing and structural evidence artifact hashing use canonical JSON and exclude each derived hash field from its own hash payload.",
+      "implementation_path": "dependency_algebra/evidence.py",
+      "implementation_symbol": "structural_evidence_artifact_hash",
+      "test_path": "tests/structural_evidence_tests.py",
+      "artifact_or_output": "result_hash and artifact_hash in dependency-algebra.structural-evidence.v2",
+      "status": "VERIFIED",
+      "evidence": "Tests recompute result_hash and artifact_hash and assert byte-identical repeated v2 emission without volatile environment/path/timestamp fields.",
+      "exact_gap": "",
+      "fixture_path": "fixtures/structural_evidence/minimal-valid-v2.json"
+    },
+    {
+      "spec_ref": "docs/issue-78-artifact-compatibility.md#under-specified-field-dispositions",
+      "requirement": "Under-specified v1 fields are parked in v1 compatibility output and are not presented as canonical registered analyses.",
+      "implementation_path": "dependency_algebra/compiler.py",
+      "implementation_symbol": "compile_artifact",
+      "test_path": "tests/structural_evidence_tests.py",
+      "artifact_or_output": "v1 compatibility artifact and v2 dependency payload",
+      "status": "VERIFIED",
+      "evidence": "Compatibility decision records PARK dispositions for redundancy_map, k_of_n_resilience_profile, and annihilation_conditions; v2 envelope keeps dependency-specific fields inside the result payload only.",
+      "exact_gap": "",
+      "fixture_path": "fixtures/structural_evidence/minimal-valid-v2.json"
     }
   ],
   "unspecified_public_behaviors": [
@@ -193,7 +274,12 @@
       "implementation_path": "dependency_algebra/compiler.py",
       "implementation_symbol": "compile_artifact",
       "status": "MISSING_SPECIFICATION",
-      "evidence": "Artifact schema lists these fields, but SPEC.md does not define their semantics beyond evidence artifact examples."
+      "evidence": "Artifact schema lists these fields, but SPEC.md does not define their semantics beyond evidence artifact examples. Issue #78 parks these as v1 compatibility fields and does not promote them to registered dependency-analysis evidence.",
+      "disposition": {
+        "redundancy_map": "PARK",
+        "k_of_n_resilience_profile": "PARK",
+        "annihilation_conditions": "PARK"
+      }
     },
     {
       "behavior": "CLI accepts reserved flags --strict, --emit-diagnostics, and --emit-hash-receipt without changing output.",

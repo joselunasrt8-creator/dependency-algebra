@@ -84,6 +84,7 @@ def validate_manifest(path: Path) -> tuple[list[str], list[str]]:
         return errors, warnings
 
     spec_refs_seen: set[str] = set()
+    entry_keys_seen: set[tuple[str, str, str, str, str]] = set()
     for index, entry in enumerate(entries):
         prefix = f"entries[{index}]"
         if not isinstance(entry, dict):
@@ -99,10 +100,18 @@ def validate_manifest(path: Path) -> tuple[list[str], list[str]]:
             errors.append(f"{prefix}.status {status!r} is not allowed")
         if status in {"PARTIAL", "MISSING_IMPLEMENTATION", "MISSING_SPECIFICATION", "MISSING_TEST", "AMBIGUOUS"} and not entry.get("exact_gap"):
             errors.append(f"{prefix}.exact_gap is required for non-verified/non-superseded status")
+        entry_key = (entry.get("spec_ref", ""), entry.get("requirement", ""), entry.get("implementation_path", ""), entry.get("implementation_symbol", ""), entry.get("test_path", ""))
+        if entry_key in entry_keys_seen:
+            errors.append(f"{prefix} duplicates an existing traceability mapping")
+        entry_keys_seen.add(entry_key)
         _validate_spec_ref(entry.get("spec_ref", ""), prefix, errors)
         spec_refs_seen.add(entry.get("spec_ref", ""))
         _validate_existing_file(entry.get("implementation_path", ""), f"{prefix}.implementation_path", errors)
         _validate_existing_file(entry.get("test_path", ""), f"{prefix}.test_path", errors)
+        for optional_path_field in ("schema_path", "fixture_path"):
+            optional_path = entry.get(optional_path_field, "")
+            if optional_path:
+                _validate_existing_file(optional_path, f"{prefix}.{optional_path_field}", errors)
         _validate_symbol(entry.get("implementation_path", ""), entry.get("implementation_symbol", ""), prefix, errors)
 
     if not any(ref.startswith("SPEC.md#7-frozen-contract-index") for ref in spec_refs_seen):
