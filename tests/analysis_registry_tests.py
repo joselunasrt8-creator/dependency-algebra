@@ -62,8 +62,9 @@ class AnalysisRegistryTests(unittest.TestCase):
     def test_core_registration_and_lookup(self):
         registry = core_analysis_registry()
 
-        self.assertEqual(registry.analysis_ids(), (CORE_ANALYSIS_ID, DEPENDENCY_ANALYSIS_ID))
-        self.assertIsInstance(registry.get(CORE_ANALYSIS_ID), CoreStructuralAnalysisPass)
+        self.assertEqual(registry.analysis_ids(), (DEPENDENCY_ANALYSIS_ID,))
+        self.assertEqual(CORE_ANALYSIS_ID, DEPENDENCY_ANALYSIS_ID)
+        self.assertIs(CoreStructuralAnalysisPass, DependencyAnalysisPass)
         self.assertIsInstance(registry.get(DEPENDENCY_ANALYSIS_ID), DependencyAnalysisPass)
 
     def test_duplicate_registration_is_rejected(self):
@@ -85,7 +86,7 @@ class AnalysisRegistryTests(unittest.TestCase):
     def test_repeated_creation_yields_identical_registry_state(self):
         states = tuple(core_analysis_registry().analysis_ids() for _ in range(5))
 
-        self.assertEqual(states, ((CORE_ANALYSIS_ID, DEPENDENCY_ANALYSIS_ID),) * 5)
+        self.assertEqual(states, ((DEPENDENCY_ANALYSIS_ID,),) * 5)
 
 
 if __name__ == "__main__":

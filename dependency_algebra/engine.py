@@ -5,14 +5,14 @@ from __future__ import annotations
 from typing import Any
 
 from dependency_algebra.classification import classify_result
-from dependency_algebra.analysis import DEPENDENCY_ANALYSIS_ID
+from dependency_algebra.analysis import DEPENDENCY_ANALYSIS_ID, DependencyAnalysisPass
 from dependency_algebra.ir import AnalysisResult, CanonicalIR
 from dependency_algebra.predicate import evaluate as evaluate_dependency
 from dependency_algebra.reachability import evaluate as evaluate_reachability
 from dependency_algebra.serialization import analysis_result_to_dict
 
 
-def analyze_artifact_legacy(ir: CanonicalIR, max_depth: int | None = None) -> AnalysisResult:
+def _analyze_artifact_legacy(ir: CanonicalIR, max_depth: int | None = None) -> AnalysisResult:
     """Legacy dependency analysis execution path kept as the equivalence oracle."""
 
     canonical_ir = ir
@@ -35,11 +35,12 @@ def analyze_artifact_legacy(ir: CanonicalIR, max_depth: int | None = None) -> An
 def analyze_artifact_registered(ir: CanonicalIR, max_depth: int | None = None) -> AnalysisResult:
     """Analyze normalized IR through the registered dependency analysis pass."""
 
-    from dependency_algebra.analysis import DependencyAnalysisPass
-    from dependency_algebra.analysis_registry import AnalysisRegistry
+    from dependency_algebra.analysis_registry import core_analysis_registry
 
-    registry = AnalysisRegistry((DependencyAnalysisPass(max_depth=max_depth),))
-    return registry.get(DEPENDENCY_ANALYSIS_ID).execute(ir)
+    pass_definition = core_analysis_registry().get(DEPENDENCY_ANALYSIS_ID)
+    if not isinstance(pass_definition, DependencyAnalysisPass):
+        raise TypeError(f"registered dependency pass has unexpected type: {type(pass_definition).__name__}")
+    return pass_definition.with_configuration(max_depth=max_depth).execute(ir)
 
 
 def analyze_artifact(ir: CanonicalIR, max_depth: int | None = None) -> AnalysisResult:

@@ -172,7 +172,7 @@
       "test_path": "tests/dependency_pass_equivalence_tests.py",
       "artifact_or_output": "dependency-algebra.analysis.v1 and dependency-algebra.artifact.v1 JSON",
       "status": "VERIFIED",
-      "evidence": "Equivalence tests compare legacy and registered dependency classification, workload ordering, diagnostics, reachable sets, dependency hashes, normalized IR hash, AnalysisResult serialization, repeated execution, and compiler artifact serialization across canonical fixtures.",
+      "evidence": "Equivalence tests compare legacy and registered dependency classification, workload ordering, diagnostics, reachable sets, dependency hashes, normalized IR hash, AnalysisResult serialization, repeated execution, and legacy-vs-registered compiler artifact serialization across canonical topology fixtures and valid dependency fixture vectors.",
       "exact_gap": ""
     },
     {

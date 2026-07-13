@@ -56,11 +56,11 @@ class AnalysisPassTests(unittest.TestCase):
         self.assertEqual(
             analysis_pass.specification_references,
             (
-                "SPEC.md#dependency-algebra",
+                "SPEC.md",
                 "DEPENDENCY_PREDICATE_CONTRACT.md#dependency-predicate-definition",
-                "REACHABILITY_CONTRACT.md#reachability-semantics",
-                "DETERMINISM.md#dependency-predicate-results",
-                "registry/traceability.json#dependency-analysis-pass-equivalence",
+                "REACHABILITY_CONTRACT.md#reachability-definition",
+                "DETERMINISM.md#dependency-predicate-determinism",
+                "registry/traceability.json",
             ),
         )
         self.assertIsInstance(analysis_pass.specification_references, tuple)

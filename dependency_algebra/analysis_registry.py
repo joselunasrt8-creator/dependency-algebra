@@ -62,7 +62,7 @@ class AnalysisRegistry:
 def core_analysis_registry() -> AnalysisRegistry:
     """Create the repository-defined deterministic core analysis registry."""
 
-    return AnalysisRegistry((CoreStructuralAnalysisPass(), DependencyAnalysisPass()))
+    return AnalysisRegistry((DependencyAnalysisPass(),))
 
 
 __all__ = [
