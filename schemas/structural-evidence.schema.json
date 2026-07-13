@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://dependency-algebra.local/schemas/structural-evidence.schema.json",
-  "title": "SYNAPSE Canonical Structural Evidence Artifact v2",
+  "title": "SYNAPSE Canonical Registered Dependency-Analysis Evidence Artifact v2",
   "type": "object",
   "additionalProperties": false,
   "required": ["artifact_schema_version", "analysis", "input", "result", "diagnostics", "provenance", "artifact_hash"],

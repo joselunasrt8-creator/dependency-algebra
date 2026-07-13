@@ -22,6 +22,40 @@ from dependency_algebra.serialization import analysis_result_hash, canonical_jso
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = (ROOT / "fixtures" / "valid" / "minimal-valid.json").read_bytes()
 V2_FIXTURE = ROOT / "fixtures" / "structural_evidence" / "minimal-valid-v2.json"
+V1_FIXTURE = ROOT / "fixtures" / "artifacts" / "minimal-valid-v1.json"
+
+
+class SpoofDependencyPass:
+    @property
+    def metadata(self):
+        return DependencyAnalysisPass().metadata
+
+    @property
+    def analysis_id(self):
+        return self.metadata.analysis_id
+
+    @property
+    def analysis_version(self):
+        return self.metadata.analysis_version
+
+    @property
+    def accepted_input(self):
+        return self.metadata.accepted_input
+
+    @property
+    def deterministic_configuration(self):
+        return self.metadata.deterministic_configuration
+
+    @property
+    def specification_references(self):
+        return self.metadata.specification_references
+
+    @property
+    def output_contract_identity(self):
+        return self.metadata.output_contract_identity
+
+    def execute(self, ir):
+        return DependencyAnalysisPass().execute(ir)
 
 
 def _ir_and_result(max_depth=None):
@@ -76,6 +110,35 @@ def test_unknown_analysis_id_fails_closed():
         compile_structural_evidence_artifact(SOURCE, source_id="minimal-valid", analysis_id="unknown.analysis")
 
 
+def test_unregistered_spoof_pass_fails_closed():
+    ir, _, result = _ir_and_result()
+    with pytest.raises(StructuralEvidenceValidationError):
+        structural_evidence_artifact(
+            analysis_pass=SpoofDependencyPass(),
+            canonical_ir=ir,
+            source_topology_hash=sha256_bytes(SOURCE),
+            result=result,
+        )
+
+
+def test_invalid_deterministic_configuration_and_source_hash_fail_closed():
+    ir, _, result = _ir_and_result()
+    with pytest.raises(StructuralEvidenceValidationError):
+        structural_evidence_artifact(
+            analysis_pass=DependencyAnalysisPass(max_depth=-1),
+            canonical_ir=ir,
+            source_topology_hash=sha256_bytes(SOURCE),
+            result=result,
+        )
+    with pytest.raises(StructuralEvidenceValidationError):
+        structural_evidence_artifact(
+            analysis_pass=DependencyAnalysisPass(),
+            canonical_ir=ir,
+            source_topology_hash="not-a-sha256",
+            result=result,
+        )
+
+
 @pytest.mark.parametrize(
     "metadata",
     [
@@ -114,7 +177,7 @@ def test_malformed_result_payload_fails_closed():
 
 
 def test_v1_dependency_artifact_remains_byte_identical_and_cli_schema_default_stable():
-    before = canonical_json_text(compile_artifact(SOURCE, source_id="minimal-valid"))
+    before = V1_FIXTURE.read_text(encoding="utf-8")
     after = canonical_json_text(compile_artifact(SOURCE, source_id="minimal-valid"))
     assert before == after
     assert "dependency-algebra.artifact.v1" in before

@@ -192,7 +192,7 @@
       "implementation_path": "dependency_algebra/analysis.py",
       "implementation_symbol": "AnalysisPass",
       "test_path": "tests/analysis_pass_tests.py",
-      "artifact_or_output": "registered analysis metadata used by dependency-algebra.structural-evidence.v2",
+      "artifact_or_output": "registered dependency-analysis metadata used by dependency-algebra.structural-evidence.v2",
       "status": "VERIFIED",
       "evidence": "Analysis pass tests exercise metadata and structural evidence tests bind the metadata into the v2 artifact envelope.",
       "exact_gap": ""
@@ -227,7 +227,7 @@
       "test_path": "tests/structural_evidence_tests.py",
       "artifact_or_output": "dependency-algebra.structural-evidence.v2",
       "status": "VERIFIED",
-      "evidence": "The v2 API emits the analysis-neutral envelope while compatibility tests assert v1 artifacts remain stable and do not include v2 schema identity.",
+      "evidence": "The v2 API emits the registered dependency-analysis envelope while compatibility tests assert v1 artifacts remain stable and do not include v2 schema identity.",
       "exact_gap": "",
       "schema_path": "schemas/structural-evidence.schema.json",
       "fixture_path": "fixtures/structural_evidence/minimal-valid-v2.json"
@@ -274,7 +274,7 @@
       "implementation_path": "dependency_algebra/compiler.py",
       "implementation_symbol": "compile_artifact",
       "status": "MISSING_SPECIFICATION",
-      "evidence": "Artifact schema lists these fields, but SPEC.md does not define their semantics beyond evidence artifact examples. Issue #78 parks these as v1 compatibility fields and does not promote them to registered-analysis evidence.",
+      "evidence": "Artifact schema lists these fields, but SPEC.md does not define their semantics beyond evidence artifact examples. Issue #78 parks these as v1 compatibility fields and does not promote them to registered dependency-analysis evidence.",
       "disposition": {
         "redundancy_map": "PARK",
         "k_of_n_resilience_profile": "PARK",

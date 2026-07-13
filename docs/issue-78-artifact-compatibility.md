@@ -4,7 +4,7 @@
 
 **B. EXPLICIT_VERSIONED_SUCCESSOR**
 
-The canonical registered-analysis evidence envelope is introduced as
+The canonical registered dependency-analysis evidence envelope is introduced as
 `dependency-algebra.structural-evidence.v2`. The existing
 `dependency-algebra.artifact.v1` compiler artifact remains byte-for-byte stable.
 
@@ -26,12 +26,13 @@ The canonical registered-analysis evidence envelope is introduced as
 * v1 artifact canonical hashes, normalized IR hashes, dependency result hashes,
   workload ordering, unresolved-reference behavior, and current fixtures remain
   unchanged.
-* v2 is emitted only through the explicit registered-analysis evidence API.
-* v2 wraps the validated registered-analysis result in an analysis-neutral
-  structural evidence envelope and hashes that envelope excluding only
-  `artifact_hash`.
+* v2 is emitted only through the explicit registered dependency-analysis
+  evidence API.
+* v2 wraps the validated registered dependency-analysis result in a
+  dependency-analysis structural evidence envelope and hashes that envelope
+  excluding only `artifact_hash`.
 * Existing v1 consumers are not redirected. Consumers that need registered
-  analysis identity must explicitly consume `dependency-algebra.structural-evidence.v2`.
+  dependency-analysis identity must explicitly consume `dependency-algebra.structural-evidence.v2`.
 
 ## Under-specified field dispositions
 
