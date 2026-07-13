@@ -44,7 +44,7 @@ class AnalysisPassTests(unittest.TestCase):
         self.assertEqual(
             analysis_pass.specification_references,
             (
-                "SPEC.md#dependency-algebra",
+                "SPEC.md",
                 "DEPENDENCY_PREDICATE_CONTRACT.md",
                 "REACHABILITY_CONTRACT.md",
                 "DETERMINISM.md",
