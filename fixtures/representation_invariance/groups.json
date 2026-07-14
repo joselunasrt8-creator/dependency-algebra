@@ -1,0 +1,245 @@
+{
+  "groups": [
+    {
+      "analysis_id": "dependency-algebra.dependency-analysis",
+      "analysis_specific": {
+        "dependency": {
+          "legacy_compatibility_oracle": "dependency_algebra.engine._analyze_artifact_legacy"
+        }
+      },
+      "baseline": "valid/minimal/baseline.json",
+      "configuration": {},
+      "description": "JSON field ordering",
+      "expected": {
+        "artifact_hash": "sha256:b55caf0e2556e7d475fcc801ffb1e5dfcb1bf5e3e8cd19de6336c1257fd39565",
+        "classification": "DEGRADED",
+        "diagnostics": [],
+        "normalized_ir_hash": "sha256:087cbfc83fb5d763735a909e0ea7d6ebd072b3da2ebb8a52f73261d86941c4ad",
+        "result_hash": "sha256:a7175dec96b52d158ad468ffde1f78135883b061e62a8f34316d29604a314588"
+      },
+      "group_id": "json-field-order-equivalence",
+      "representations": [
+        "valid/minimal/baseline.json",
+        "valid/minimal/json-field-order.json"
+      ],
+      "semantic_identity": "minimal-valid-topology"
+    },
+    {
+      "analysis_id": "dependency-algebra.dependency-analysis",
+      "analysis_specific": {
+        "dependency": {
+          "legacy_compatibility_oracle": "dependency_algebra.engine._analyze_artifact_legacy"
+        }
+      },
+      "baseline": "valid/minimal/baseline.json",
+      "configuration": {},
+      "description": "Component ordering",
+      "expected": {
+        "artifact_hash": "sha256:b55caf0e2556e7d475fcc801ffb1e5dfcb1bf5e3e8cd19de6336c1257fd39565",
+        "classification": "DEGRADED",
+        "diagnostics": [],
+        "normalized_ir_hash": "sha256:087cbfc83fb5d763735a909e0ea7d6ebd072b3da2ebb8a52f73261d86941c4ad",
+        "result_hash": "sha256:a7175dec96b52d158ad468ffde1f78135883b061e62a8f34316d29604a314588"
+      },
+      "group_id": "component-order-equivalence",
+      "representations": [
+        "valid/minimal/baseline.json",
+        "valid/minimal/component-order.json"
+      ],
+      "semantic_identity": "minimal-valid-topology"
+    },
+    {
+      "analysis_id": "dependency-algebra.dependency-analysis",
+      "analysis_specific": {
+        "dependency": {
+          "legacy_compatibility_oracle": "dependency_algebra.engine._analyze_artifact_legacy"
+        }
+      },
+      "baseline": "valid/minimal/baseline.json",
+      "configuration": {},
+      "description": "Edge ordering",
+      "expected": {
+        "artifact_hash": "sha256:b55caf0e2556e7d475fcc801ffb1e5dfcb1bf5e3e8cd19de6336c1257fd39565",
+        "classification": "DEGRADED",
+        "diagnostics": [],
+        "normalized_ir_hash": "sha256:087cbfc83fb5d763735a909e0ea7d6ebd072b3da2ebb8a52f73261d86941c4ad",
+        "result_hash": "sha256:a7175dec96b52d158ad468ffde1f78135883b061e62a8f34316d29604a314588"
+      },
+      "group_id": "edge-order-equivalence",
+      "representations": [
+        "valid/minimal/baseline.json",
+        "valid/minimal/edge-order.json"
+      ],
+      "semantic_identity": "minimal-valid-topology"
+    },
+    {
+      "analysis_id": "dependency-algebra.dependency-analysis",
+      "analysis_specific": {
+        "dependency": {
+          "legacy_compatibility_oracle": "dependency_algebra.engine._analyze_artifact_legacy"
+        }
+      },
+      "baseline": "valid/minimal/baseline.json",
+      "configuration": {},
+      "description": "Workload ordering",
+      "expected": {
+        "artifact_hash": "sha256:b55caf0e2556e7d475fcc801ffb1e5dfcb1bf5e3e8cd19de6336c1257fd39565",
+        "classification": "DEGRADED",
+        "diagnostics": [],
+        "normalized_ir_hash": "sha256:087cbfc83fb5d763735a909e0ea7d6ebd072b3da2ebb8a52f73261d86941c4ad",
+        "result_hash": "sha256:a7175dec96b52d158ad468ffde1f78135883b061e62a8f34316d29604a314588"
+      },
+      "group_id": "workload-order-equivalence",
+      "representations": [
+        "valid/minimal/baseline.json",
+        "valid/minimal/workload-order.json"
+      ],
+      "semantic_identity": "minimal-valid-topology"
+    },
+    {
+      "analysis_id": "dependency-algebra.dependency-analysis",
+      "analysis_specific": {
+        "dependency": {
+          "legacy_compatibility_oracle": "dependency_algebra.engine._analyze_artifact_legacy"
+        }
+      },
+      "baseline": "valid/minimal/baseline.json",
+      "configuration": {},
+      "description": "Root ordering and duplicate root collapse",
+      "expected": {
+        "artifact_hash": "sha256:b55caf0e2556e7d475fcc801ffb1e5dfcb1bf5e3e8cd19de6336c1257fd39565",
+        "classification": "DEGRADED",
+        "diagnostics": [],
+        "normalized_ir_hash": "sha256:087cbfc83fb5d763735a909e0ea7d6ebd072b3da2ebb8a52f73261d86941c4ad",
+        "result_hash": "sha256:a7175dec96b52d158ad468ffde1f78135883b061e62a8f34316d29604a314588"
+      },
+      "group_id": "root-order-equivalence",
+      "representations": [
+        "valid/minimal/baseline.json",
+        "valid/minimal/root-order.json"
+      ],
+      "semantic_identity": "minimal-valid-topology"
+    },
+    {
+      "analysis_id": "dependency-algebra.dependency-analysis",
+      "analysis_specific": {
+        "dependency": {
+          "legacy_compatibility_oracle": "dependency_algebra.engine._analyze_artifact_legacy"
+        }
+      },
+      "baseline": "valid/minimal/baseline.json",
+      "configuration": {},
+      "description": "Candidate-set ordering and duplicate candidate collapse",
+      "expected": {
+        "artifact_hash": "sha256:b55caf0e2556e7d475fcc801ffb1e5dfcb1bf5e3e8cd19de6336c1257fd39565",
+        "classification": "DEGRADED",
+        "diagnostics": [],
+        "normalized_ir_hash": "sha256:087cbfc83fb5d763735a909e0ea7d6ebd072b3da2ebb8a52f73261d86941c4ad",
+        "result_hash": "sha256:a7175dec96b52d158ad468ffde1f78135883b061e62a8f34316d29604a314588"
+      },
+      "group_id": "candidate-set-order-equivalence",
+      "representations": [
+        "valid/minimal/baseline.json",
+        "valid/minimal/candidate-set-order.json"
+      ],
+      "semantic_identity": "minimal-valid-topology"
+    },
+    {
+      "analysis_id": "dependency-algebra.dependency-analysis",
+      "analysis_specific": {
+        "dependency": {
+          "legacy_compatibility_oracle": "dependency_algebra.engine._analyze_artifact_legacy"
+        }
+      },
+      "baseline": "valid/minimal/baseline.json",
+      "configuration": {},
+      "description": "Irrelevant whitespace",
+      "expected": {
+        "artifact_hash": "sha256:b55caf0e2556e7d475fcc801ffb1e5dfcb1bf5e3e8cd19de6336c1257fd39565",
+        "classification": "DEGRADED",
+        "diagnostics": [],
+        "normalized_ir_hash": "sha256:087cbfc83fb5d763735a909e0ea7d6ebd072b3da2ebb8a52f73261d86941c4ad",
+        "result_hash": "sha256:a7175dec96b52d158ad468ffde1f78135883b061e62a8f34316d29604a314588"
+      },
+      "group_id": "irrelevant-whitespace-equivalence",
+      "representations": [
+        "valid/minimal/baseline.json",
+        "valid/minimal/irrelevant-whitespace.json"
+      ],
+      "semantic_identity": "minimal-valid-topology"
+    },
+    {
+      "analysis_id": "dependency-algebra.dependency-analysis",
+      "analysis_specific": {
+        "dependency": {
+          "legacy_compatibility_oracle": "dependency_algebra.engine._analyze_artifact_legacy"
+        }
+      },
+      "baseline": "valid/minimal/baseline.json",
+      "configuration": {},
+      "description": "Equivalent compact vs pretty JSON serialization",
+      "expected": {
+        "artifact_hash": "sha256:b55caf0e2556e7d475fcc801ffb1e5dfcb1bf5e3e8cd19de6336c1257fd39565",
+        "classification": "DEGRADED",
+        "diagnostics": [],
+        "normalized_ir_hash": "sha256:087cbfc83fb5d763735a909e0ea7d6ebd072b3da2ebb8a52f73261d86941c4ad",
+        "result_hash": "sha256:a7175dec96b52d158ad468ffde1f78135883b061e62a8f34316d29604a314588"
+      },
+      "group_id": "compact-pretty-equivalence",
+      "representations": [
+        "valid/minimal/baseline.json",
+        "valid/minimal/compact.json"
+      ],
+      "semantic_identity": "minimal-valid-topology"
+    },
+    {
+      "analysis_id": "dependency-algebra.dependency-analysis",
+      "analysis_specific": {
+        "dependency": {
+          "legacy_compatibility_oracle": "dependency_algebra.engine._analyze_artifact_legacy"
+        }
+      },
+      "baseline": "valid/minimal/baseline.json",
+      "configuration": {},
+      "description": "Equivalent adjacency declaration ordering via edge declarations",
+      "expected": {
+        "artifact_hash": "sha256:b55caf0e2556e7d475fcc801ffb1e5dfcb1bf5e3e8cd19de6336c1257fd39565",
+        "classification": "DEGRADED",
+        "diagnostics": [],
+        "normalized_ir_hash": "sha256:087cbfc83fb5d763735a909e0ea7d6ebd072b3da2ebb8a52f73261d86941c4ad",
+        "result_hash": "sha256:a7175dec96b52d158ad468ffde1f78135883b061e62a8f34316d29604a314588"
+      },
+      "group_id": "adjacency-declaration-order-equivalence",
+      "representations": [
+        "valid/minimal/baseline.json",
+        "valid/minimal/adjacency-declaration-order.json"
+      ],
+      "semantic_identity": "minimal-valid-topology"
+    },
+    {
+      "analysis_id": "dependency-algebra.dependency-analysis",
+      "analysis_specific": {
+        "dependency": {
+          "legacy_compatibility_oracle": "dependency_algebra.engine._analyze_artifact_legacy"
+        }
+      },
+      "baseline": "valid/minimal/baseline.json",
+      "configuration": {},
+      "description": "Ignored metadata ordering",
+      "expected": {
+        "artifact_hash": "sha256:b55caf0e2556e7d475fcc801ffb1e5dfcb1bf5e3e8cd19de6336c1257fd39565",
+        "classification": "DEGRADED",
+        "diagnostics": [],
+        "normalized_ir_hash": "sha256:087cbfc83fb5d763735a909e0ea7d6ebd072b3da2ebb8a52f73261d86941c4ad",
+        "result_hash": "sha256:a7175dec96b52d158ad468ffde1f78135883b061e62a8f34316d29604a314588"
+      },
+      "group_id": "metadata-order-equivalence",
+      "representations": [
+        "valid/minimal/baseline.json",
+        "valid/minimal/metadata-order.json"
+      ],
+      "semantic_identity": "minimal-valid-topology"
+    }
+  ],
+  "schema_version": "synapse.representation-invariance-groups.v1"
+}

@@ -1,0 +1,101 @@
+{
+  "schema_version": "dependency-algebra.topology.v1",
+  "topology_id": "representation-invariance-minimal",
+  "components": [
+    {
+      "id": "client",
+      "type": "entry",
+      "metadata": {
+        "tier": "edge",
+        "zone": "a"
+      }
+    },
+    {
+      "id": "api",
+      "type": "service",
+      "metadata": {
+        "tier": "app",
+        "zone": "b"
+      }
+    },
+    {
+      "id": "cache",
+      "type": "service",
+      "metadata": {
+        "tier": "app",
+        "zone": "c"
+      }
+    },
+    {
+      "id": "db",
+      "type": "store",
+      "metadata": {
+        "tier": "data",
+        "zone": "d"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "api-db",
+      "from": "api",
+      "to": "db",
+      "metadata": {
+        "protocol": "tcp",
+        "priority": "1"
+      }
+    },
+    {
+      "id": "client-api",
+      "from": "client",
+      "to": "api",
+      "metadata": {
+        "protocol": "https",
+        "priority": "1"
+      }
+    },
+    {
+      "id": "client-cache",
+      "from": "client",
+      "to": "cache",
+      "metadata": {
+        "protocol": "https",
+        "priority": "2"
+      }
+    },
+    {
+      "id": "cache-db",
+      "from": "cache",
+      "to": "db",
+      "metadata": {
+        "protocol": "tcp",
+        "priority": "2"
+      }
+    }
+  ],
+  "workloads": [
+    {
+      "id": "serve",
+      "roots": [
+        "missing"
+      ],
+      "target": "db",
+      "candidate_set": [
+        "api"
+      ],
+      "expected_classification": "VALID"
+    },
+    {
+      "id": "serve-redundant",
+      "roots": [
+        "client"
+      ],
+      "target": "db",
+      "candidate_set": [
+        "api",
+        "cache"
+      ],
+      "expected_classification": "VALID"
+    }
+  ]
+}

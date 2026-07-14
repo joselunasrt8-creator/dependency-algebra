@@ -266,6 +266,19 @@
       "evidence": "Compatibility decision records PARK dispositions for redundancy_map, k_of_n_resilience_profile, and annihilation_conditions; v2 envelope keeps dependency-specific fields inside the result payload only.",
       "exact_gap": "",
       "fixture_path": "fixtures/structural_evidence/minimal-valid-v2.json"
+    },
+    {
+      "spec_ref": "DETERMINISM.md#canonical-serialization-rules",
+      "requirement": "Issue #81: representation-equivalent topology inputs must produce identical CanonicalIR identity, registered dependency AnalysisResult identity, legacy compatibility serialization, and dependency-algebra.structural-evidence.v2 artifact identity, while invalid or semantically distinct representations fail deterministically or diverge at the earliest localized stage.",
+      "implementation_path": "tests/representation_invariance_tests.py",
+      "implementation_symbol": "assert_no_divergence",
+      "test_path": "tests/representation_invariance_tests.py",
+      "artifact_or_output": "synapse.representation-invariance-groups.v1 fixtures, negative fixtures, divergence reports, dependency-algebra.analysis.v1, and dependency-algebra.structural-evidence.v2",
+      "status": "VERIFIED",
+      "evidence": "The Issue #81 conformance suite loads sorted fixture groups, repeats each valid group, compares canonical IR ordering and serialization, registered dependency result hashes and serialization, legacy oracle serialization, structural evidence v2 serialization and artifact hashes, and verifies deterministic negative behavior plus divergence localization reports.",
+      "exact_gap": "Structural evidence v2 still records exact source bytes in production compile_structural_evidence_artifact; the conformance harness binds source_topology_hash to canonical IR identity when comparing representation-invariant artifact identity so the existing v2 schema and frozen fixture remain unchanged.",
+      "schema_path": "schemas/representation-invariance-groups.schema.json",
+      "fixture_path": "fixtures/representation_invariance/groups.json"
     }
   ],
   "unspecified_public_behaviors": [

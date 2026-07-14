@@ -126,6 +126,8 @@ class DependencyAnalysisPass:
     def with_configuration(self, *, max_depth: int | None = None) -> "DependencyAnalysisPass":
         """Bind deterministic execution configuration without changing pass identity."""
 
+        if max_depth is not None and (not isinstance(max_depth, int) or isinstance(max_depth, bool) or max_depth < 0):
+            raise ValueError("max_depth must be a nonnegative integer")
         return DependencyAnalysisPass(max_depth=max_depth)
 
     def execute(self, ir: CanonicalIR) -> AnalysisResult:

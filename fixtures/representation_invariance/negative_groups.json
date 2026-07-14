@@ -1,0 +1,142 @@
+{
+  "groups": [
+    {
+      "analysis_id": "dependency-algebra.dependency-analysis",
+      "expected": {
+        "outcome": "FAIL",
+        "stage": "VALIDATION"
+      },
+      "group_id": "duplicate-component-declaration",
+      "representation": "negative/duplicate-component.json"
+    },
+    {
+      "analysis_id": "dependency-algebra.dependency-analysis",
+      "expected": {
+        "outcome": "FAIL",
+        "stage": "VALIDATION"
+      },
+      "group_id": "duplicate-edge-declaration",
+      "representation": "negative/duplicate-edge.json"
+    },
+    {
+      "analysis_id": "dependency-algebra.dependency-analysis",
+      "expected": {
+        "outcome": "FAIL",
+        "stage": "VALIDATION"
+      },
+      "group_id": "duplicate-workload-declaration",
+      "representation": "negative/duplicate-workload.json"
+    },
+    {
+      "analysis_id": "dependency-algebra.dependency-analysis",
+      "expected": {
+        "outcome": "FAIL",
+        "stage": "VALIDATION"
+      },
+      "group_id": "unresolved-component-reference",
+      "representation": "negative/unresolved-component-reference.json"
+    },
+    {
+      "analysis_id": "dependency-algebra.dependency-analysis",
+      "expected": {
+        "outcome": "FAIL",
+        "stage": "VALIDATION"
+      },
+      "group_id": "unresolved-workload-root",
+      "representation": "negative/unresolved-workload-root.json"
+    },
+    {
+      "analysis_id": "dependency-algebra.dependency-analysis",
+      "expected": {
+        "outcome": "FAIL",
+        "stage": "VALIDATION"
+      },
+      "group_id": "unresolved-workload-target",
+      "representation": "negative/unresolved-workload-target.json"
+    },
+    {
+      "analysis_id": "dependency-algebra.dependency-analysis",
+      "expected": {
+        "outcome": "FAIL",
+        "stage": "PARSE"
+      },
+      "group_id": "malformed-json",
+      "representation": "negative/malformed-json.json"
+    },
+    {
+      "analysis_id": "dependency-algebra.dependency-analysis",
+      "expected": {
+        "outcome": "FAIL",
+        "stage": "VALIDATION"
+      },
+      "group_id": "unsupported-alias-ambiguous-representation",
+      "representation": "negative/unsupported-alias.json"
+    },
+    {
+      "analysis_id": "unknown.analysis",
+      "expected": {
+        "outcome": "FAIL",
+        "stage": "REGISTRY"
+      },
+      "group_id": "unknown-analysis-id",
+      "representation": "valid/minimal/baseline.json"
+    },
+    {
+      "analysis_id": "dependency-algebra.dependency-analysis",
+      "expected": {
+        "outcome": "FAIL",
+        "stage": "RESULT_VALIDATION"
+      },
+      "expected_normalized_ir_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "group_id": "normalized-ir-hash-mismatch",
+      "representation": "valid/minimal/baseline.json"
+    },
+    {
+      "analysis_id": "dependency-algebra.dependency-analysis",
+      "expected": {
+        "outcome": "FAIL",
+        "stage": "RESULT_VALIDATION"
+      },
+      "expected_result_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "group_id": "result-hash-mismatch",
+      "representation": "valid/minimal/baseline.json"
+    },
+    {
+      "analysis_id": "dependency-algebra.dependency-analysis",
+      "configuration": {
+        "max_depth": -1
+      },
+      "expected": {
+        "outcome": "FAIL",
+        "stage": "REGISTRY"
+      },
+      "group_id": "malformed-analysis-configuration",
+      "representation": "valid/minimal/baseline.json"
+    },
+    {
+      "analysis_id": "dependency-algebra.dependency-analysis",
+      "expected": {
+        "outcome": "DISTINCT"
+      },
+      "group_id": "semantically-distinct-edge-change",
+      "representation": "negative/semantically-distinct-edge-change.json"
+    },
+    {
+      "analysis_id": "dependency-algebra.dependency-analysis",
+      "expected": {
+        "outcome": "DISTINCT"
+      },
+      "group_id": "semantically-distinct-candidate-set-change",
+      "representation": "negative/semantically-distinct-candidate-set-change.json"
+    },
+    {
+      "analysis_id": "dependency-algebra.dependency-analysis",
+      "expected": {
+        "outcome": "DISTINCT"
+      },
+      "group_id": "semantically-distinct-root-change",
+      "representation": "negative/semantically-distinct-root-change.json"
+    }
+  ],
+  "schema_version": "synapse.representation-invariance-negative-groups.v1"
+}
