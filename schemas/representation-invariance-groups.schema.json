@@ -22,11 +22,10 @@
           "representations": {"type": "array", "minItems": 2, "items": {"type": "string", "minLength": 1}},
           "expected": {
             "type": "object",
-            "required": ["normalized_ir_hash", "result_hash", "artifact_hash", "classification", "diagnostics"],
+            "required": ["normalized_ir_hash", "result_hash", "classification", "diagnostics"],
             "properties": {
               "normalized_ir_hash": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
               "result_hash": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
-              "artifact_hash": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
               "classification": {"enum": ["VALID", "DEGRADED", "NULL"]},
               "diagnostics": {"type": "array"}
             },

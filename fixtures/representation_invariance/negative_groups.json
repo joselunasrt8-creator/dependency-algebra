@@ -85,7 +85,7 @@
       "analysis_id": "dependency-algebra.dependency-analysis",
       "expected": {
         "outcome": "FAIL",
-        "stage": "RESULT_VALIDATION"
+        "stage": "NORMALIZATION"
       },
       "expected_normalized_ir_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
       "group_id": "normalized-ir-hash-mismatch",

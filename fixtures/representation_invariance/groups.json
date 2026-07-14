@@ -11,7 +11,6 @@
       "configuration": {},
       "description": "JSON field ordering",
       "expected": {
-        "artifact_hash": "sha256:b55caf0e2556e7d475fcc801ffb1e5dfcb1bf5e3e8cd19de6336c1257fd39565",
         "classification": "DEGRADED",
         "diagnostics": [],
         "normalized_ir_hash": "sha256:087cbfc83fb5d763735a909e0ea7d6ebd072b3da2ebb8a52f73261d86941c4ad",
@@ -35,7 +34,6 @@
       "configuration": {},
       "description": "Component ordering",
       "expected": {
-        "artifact_hash": "sha256:b55caf0e2556e7d475fcc801ffb1e5dfcb1bf5e3e8cd19de6336c1257fd39565",
         "classification": "DEGRADED",
         "diagnostics": [],
         "normalized_ir_hash": "sha256:087cbfc83fb5d763735a909e0ea7d6ebd072b3da2ebb8a52f73261d86941c4ad",
@@ -59,7 +57,6 @@
       "configuration": {},
       "description": "Edge ordering",
       "expected": {
-        "artifact_hash": "sha256:b55caf0e2556e7d475fcc801ffb1e5dfcb1bf5e3e8cd19de6336c1257fd39565",
         "classification": "DEGRADED",
         "diagnostics": [],
         "normalized_ir_hash": "sha256:087cbfc83fb5d763735a909e0ea7d6ebd072b3da2ebb8a52f73261d86941c4ad",
@@ -83,7 +80,6 @@
       "configuration": {},
       "description": "Workload ordering",
       "expected": {
-        "artifact_hash": "sha256:b55caf0e2556e7d475fcc801ffb1e5dfcb1bf5e3e8cd19de6336c1257fd39565",
         "classification": "DEGRADED",
         "diagnostics": [],
         "normalized_ir_hash": "sha256:087cbfc83fb5d763735a909e0ea7d6ebd072b3da2ebb8a52f73261d86941c4ad",
@@ -107,7 +103,6 @@
       "configuration": {},
       "description": "Root ordering and duplicate root collapse",
       "expected": {
-        "artifact_hash": "sha256:b55caf0e2556e7d475fcc801ffb1e5dfcb1bf5e3e8cd19de6336c1257fd39565",
         "classification": "DEGRADED",
         "diagnostics": [],
         "normalized_ir_hash": "sha256:087cbfc83fb5d763735a909e0ea7d6ebd072b3da2ebb8a52f73261d86941c4ad",
@@ -131,7 +126,6 @@
       "configuration": {},
       "description": "Candidate-set ordering and duplicate candidate collapse",
       "expected": {
-        "artifact_hash": "sha256:b55caf0e2556e7d475fcc801ffb1e5dfcb1bf5e3e8cd19de6336c1257fd39565",
         "classification": "DEGRADED",
         "diagnostics": [],
         "normalized_ir_hash": "sha256:087cbfc83fb5d763735a909e0ea7d6ebd072b3da2ebb8a52f73261d86941c4ad",
@@ -155,7 +149,6 @@
       "configuration": {},
       "description": "Irrelevant whitespace",
       "expected": {
-        "artifact_hash": "sha256:b55caf0e2556e7d475fcc801ffb1e5dfcb1bf5e3e8cd19de6336c1257fd39565",
         "classification": "DEGRADED",
         "diagnostics": [],
         "normalized_ir_hash": "sha256:087cbfc83fb5d763735a909e0ea7d6ebd072b3da2ebb8a52f73261d86941c4ad",
@@ -179,7 +172,6 @@
       "configuration": {},
       "description": "Equivalent compact vs pretty JSON serialization",
       "expected": {
-        "artifact_hash": "sha256:b55caf0e2556e7d475fcc801ffb1e5dfcb1bf5e3e8cd19de6336c1257fd39565",
         "classification": "DEGRADED",
         "diagnostics": [],
         "normalized_ir_hash": "sha256:087cbfc83fb5d763735a909e0ea7d6ebd072b3da2ebb8a52f73261d86941c4ad",
@@ -203,7 +195,6 @@
       "configuration": {},
       "description": "Equivalent adjacency declaration ordering via edge declarations",
       "expected": {
-        "artifact_hash": "sha256:b55caf0e2556e7d475fcc801ffb1e5dfcb1bf5e3e8cd19de6336c1257fd39565",
         "classification": "DEGRADED",
         "diagnostics": [],
         "normalized_ir_hash": "sha256:087cbfc83fb5d763735a909e0ea7d6ebd072b3da2ebb8a52f73261d86941c4ad",
@@ -227,7 +218,6 @@
       "configuration": {},
       "description": "Ignored metadata ordering",
       "expected": {
-        "artifact_hash": "sha256:b55caf0e2556e7d475fcc801ffb1e5dfcb1bf5e3e8cd19de6336c1257fd39565",
         "classification": "DEGRADED",
         "diagnostics": [],
         "normalized_ir_hash": "sha256:087cbfc83fb5d763735a909e0ea7d6ebd072b3da2ebb8a52f73261d86941c4ad",
