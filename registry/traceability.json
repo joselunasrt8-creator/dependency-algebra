@@ -291,6 +291,18 @@
       "evidence": "Matrix tests validate the required boundary IDs and fields, execute the positive registered path, assert deterministic failure fingerprints for malformed JSON, invalid shape, duplicates, unresolved references, unknown analysis ID, duplicate registration, malformed configuration/result, hash mismatch, artifact-schema failure, and CanonicalIR mutation rejection, and verify CLI/conformance compatibility.",
       "exact_gap": "",
       "fixture_path": "registry/analysis_integration_matrix.json"
+    },
+    {
+      "spec_ref": "SPEC.md#6-algorithm-conformance-and-diagnostics",
+      "requirement": "Issue #83: the Paper 1 Dependency Predicate canonical research object and fixture must cross the repository boundary through the SYNAPSE adapter, production parser, CanonicalIR, registered dependency pass, result validation, compile_structural_evidence_artifact, and deterministic conformance result without introducing a duplicate registry, dependency implementation, or evidence model.",
+      "implementation_path": "conformance/foundation_adapter.py",
+      "implementation_symbol": "run_paper1_dependency_conformance",
+      "test_path": "tests/cross_repository_conformance_tests.py",
+      "artifact_or_output": "synapse.cross-repository-conformance-result.v1",
+      "status": "VERIFIED",
+      "evidence": "Focused conformance tests execute the real Structural Analysis Foundations Paper 1 fixture, compare source fixture hash, normalized IR hash, result hash, artifact hash, expected and actual classification, verify byte-identical repeated output, preserve fixture edge order before SYNAPSE normalization, and cover deterministic negative cases for unknown research object, unsupported fixture version, malformed fixture, missing normative reference, missing registered analysis, source hash mismatch, normalized IR hash mismatch, malformed analysis result, expected classification mismatch, and repeated-run divergence.",
+      "exact_gap": "",
+      "fixture_path": "../structural-analysis-foundations/conformance/fixtures/dependency-predicate.fixture.json"
     }
   ],
   "unspecified_public_behaviors": [
