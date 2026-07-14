@@ -279,6 +279,18 @@
       "exact_gap": "Structural evidence v2 intentionally records exact source bytes in source_topology_hash; full artifact serialization and artifact_hash are representation-sensitive provenance identities, not semantic invariance fields.",
       "schema_path": "schemas/representation-invariance-groups.schema.json",
       "fixture_path": "fixtures/representation_invariance/groups.json"
+    },
+    {
+      "spec_ref": "docs/analysis-engine-p0-adr.md#responsibility-split",
+      "requirement": "Issue #53: authoritative integration matrix must trace every registered-analysis pipeline boundary from parser through validation, normalization, CanonicalIR, registry lookup, pass execution, result validation, canonical structural evidence artifact emission, CLI compatibility, and conformance consumers.",
+      "implementation_path": "registry/analysis_integration_matrix.json",
+      "implementation_symbol": "analysis_integration_matrix.records",
+      "test_path": "tests/analysis_integration_matrix_tests.py",
+      "artifact_or_output": "synapse.analysis-integration-matrix.v1 with positive and deterministic negative evidence per boundary",
+      "status": "VERIFIED",
+      "evidence": "Matrix tests validate the required boundary IDs and fields, execute the positive registered path, assert deterministic failure fingerprints for malformed JSON, invalid shape, duplicates, unresolved references, unknown analysis ID, duplicate registration, malformed configuration/result, hash mismatch, artifact-schema failure, and CanonicalIR mutation rejection, and verify CLI/conformance compatibility.",
+      "exact_gap": "",
+      "fixture_path": "registry/analysis_integration_matrix.json"
     }
   ],
   "unspecified_public_behaviors": [
