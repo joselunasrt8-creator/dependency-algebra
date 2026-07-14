@@ -36,6 +36,8 @@ PAPER1_RESEARCH_OBJECT_PATH = (
     "definition.dependency.dependency-predicate.json"
 )
 PAPER1_FIXTURE_SCHEMA_PATH = "schemas/canonical-dependency-predicate.schema.json"
+PAPER1_SOURCE_FIXTURE_HASH = "sha256:dfb84a3a66e438382899812a36fce124f7e2ef29ca23bda31a7ce14a4998c276"
+PAPER1_NORMALIZED_IR_HASH = "sha256:0aab9f68e50d6519e7f169386b7f552b8e2560a27c82dc854c1652efb429b4b0"
 
 
 def canonical_json(data):
@@ -144,14 +146,24 @@ def run_paper1_dependency_conformance(
     synapse_repo_path: str | Path = ROOT,
     analysis_id: str = DEPENDENCY_ANALYSIS_ID,
     registry=None,
-    expected_source_fixture_hash: str | None = None,
-    expected_normalized_ir_hash: str | None = None,
+    expected_source_fixture_hash: str | None = PAPER1_SOURCE_FIXTURE_HASH,
+    expected_normalized_ir_hash: str | None = PAPER1_NORMALIZED_IR_HASH,
     second_artifact_override: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Execute the canonical Paper 1 dependency fixture through SYNAPSE."""
 
     fixture_path = Path(fixture_path)
-    fixture_bytes = fixture_path.read_bytes()
+    try:
+        fixture_bytes = fixture_path.read_bytes()
+    except OSError:
+        return _blocked_result(
+            source_fixture_hash="UNOBSERVED",
+            verdict="BLOCKED",
+            code="FIXTURE_UNAVAILABLE",
+            message="fixture file is unavailable",
+            research_repo_path=research_repo_path,
+            synapse_repo_path=synapse_repo_path,
+        )
     source_fixture_hash = _sha256_prefixed(fixture_bytes)
     try:
         fixture = json.loads(fixture_bytes.decode("utf-8"))
@@ -174,6 +186,26 @@ def run_paper1_dependency_conformance(
             research_repo_path=research_repo_path,
             synapse_repo_path=synapse_repo_path,
         )
+    for repository_name, repository_path in (
+        ("research_repository", research_repo_path),
+        ("synapse_repository", synapse_repo_path),
+    ):
+        if _git_commit(repository_path) == "UNOBSERVED":
+            return _conformance_result(
+                fixture=fixture,
+                research_repo_path=research_repo_path,
+                synapse_repo_path=synapse_repo_path,
+                source_fixture_hash=source_fixture_hash,
+                normalized_ir_hash="UNOBSERVED",
+                result_hash="UNOBSERVED",
+                artifact_hash="UNOBSERVED",
+                analysis_id=analysis_id,
+                analysis_version="UNOBSERVED",
+                expected_classification=_expected_classification(fixture),
+                actual_classification="UNOBSERVED",
+                verdict="BLOCKED",
+                diagnostics=[_diagnostic("REPOSITORY_COMMIT_UNOBSERVED", "error", f"{repository_name} commit could not be observed")],
+            )
     if expected_source_fixture_hash is not None and expected_source_fixture_hash != source_fixture_hash:
         return _conformance_result(
             fixture=fixture,
@@ -191,9 +223,9 @@ def run_paper1_dependency_conformance(
             diagnostics=[_diagnostic("SOURCE_HASH_MISMATCH", "error", "source fixture hash did not match expected hash")],
         )
 
-    topology = _paper1_topology_from_fixture(fixture)
-    topology_source = canonical_json_text(topology)
     try:
+        topology = _paper1_topology_from_fixture(fixture)
+        topology_source = canonical_json_text(topology)
         registry = registry or core_analysis_registry()
         artifact = compile_structural_evidence_artifact(
             topology_source,
@@ -314,8 +346,12 @@ def _preflight_fixture(fixture: Any) -> tuple[str, str, str] | None:
             raise KeyError("input.graph.nodes/input.graph.edges")
         if not workload["roots"] or not workload["targets"] or not workload["candidate_component_set"]:
             raise KeyError("input.workload roots/targets/candidate_component_set")
+        if len(workload["targets"]) != 1:
+            raise KeyError("input.workload.targets must contain exactly one target")
         if "is_dependency" not in expected["canonical_outputs"]:
             raise KeyError("expected_semantics.canonical_outputs.is_dependency")
+        if "removed_components" not in expected["structural_invariants"]:
+            raise KeyError("expected_semantics.structural_invariants.removed_components")
     except (KeyError, TypeError) as exc:
         return ("FAIL", "MALFORMED_FIXTURE", str(exc))
     return None
@@ -437,9 +473,12 @@ def _sha256_prefixed(payload: bytes) -> str:
 
 
 def _git_commit(path: str | Path) -> str:
+    repo_path = Path(path)
+    if not repo_path.is_dir():
+        return "UNOBSERVED"
     completed = subprocess.run(
         ["git", "rev-parse", "HEAD"],
-        cwd=Path(path),
+        cwd=repo_path,
         check=False,
         text=True,
         capture_output=True,

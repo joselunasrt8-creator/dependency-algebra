@@ -302,7 +302,7 @@
       "status": "VERIFIED",
       "evidence": "Focused conformance tests execute the real Structural Analysis Foundations Paper 1 fixture, compare source fixture hash, normalized IR hash, result hash, artifact hash, expected and actual classification, verify byte-identical repeated output, preserve fixture edge order before SYNAPSE normalization, and cover deterministic negative cases for unknown research object, unsupported fixture version, malformed fixture, missing normative reference, missing registered analysis, source hash mismatch, normalized IR hash mismatch, malformed analysis result, expected classification mismatch, and repeated-run divergence.",
       "exact_gap": "",
-      "fixture_path": "../structural-analysis-foundations/conformance/fixtures/dependency-predicate.fixture.json"
+      "external_fixture_path": "../structural-analysis-foundations/conformance/fixtures/dependency-predicate.fixture.json"
     }
   ],
   "unspecified_public_behaviors": [

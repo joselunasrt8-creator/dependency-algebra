@@ -37,6 +37,9 @@ binding, expected-versus-actual comparison, and conformance reporting.
 
 The adapter preserves fixture edge order in the translated source topology.
 SYNAPSE normalization then owns CanonicalIR ordering and normalized identity.
+For this fixed conformance case, the adapter pins the canonical source fixture
+hash and normalized IR hash by default so fixture drift cannot be reported as
+conformant.
 
 ## Result
 
@@ -58,8 +61,9 @@ NOT_APPLICABLE
 UNOBSERVED
 ```
 
-Issue #83 currently uses `PASS`, `FAIL`, and `NOT_APPLICABLE` for the declared
-positive and negative cases. Missing evidence is never reported as `PASS`.
+Issue #83 currently uses `PASS`, `FAIL`, `BLOCKED`, and `NOT_APPLICABLE` for
+the declared positive, unavailable-input, and negative cases. Missing evidence
+is never reported as `PASS`.
 
 ## Validation
 
@@ -74,4 +78,5 @@ The suite covers the positive canonical fixture and deterministic failures for
 unknown research object, unsupported fixture version, malformed fixture, missing
 normative reference, missing registered analysis, source hash mismatch,
 normalized IR hash mismatch, malformed analysis result, expected classification
-mismatch, and repeated-run divergence.
+mismatch, repeated-run divergence, unavailable fixture input, and canonical
+fixture drift.
