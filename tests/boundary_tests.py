@@ -2,7 +2,15 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-FORBIDDEN_PATH_TERMS = {"authority", "proof", "execution", "runtime", "policy", "governance", "continuityos"}
+FORBIDDEN_PATH_TERMS = {
+    "authority",
+    "proof",
+    "execution",
+    "runtime",
+    "policy",
+    "governance",
+    "continuityos",
+}
 
 
 class BoundaryTests(unittest.TestCase):
@@ -22,10 +30,10 @@ class BoundaryTests(unittest.TestCase):
         self.assertIn("do not represent execution eligibility", text)
         self.assertIn("runtime authorization", text)
 
-    def test_readme_excludes_runtime_and_governance_surfaces(self):
+    def test_readme_links_to_normative_boundary_contract(self):
         text = (ROOT / "README.md").read_text(encoding="utf-8")
-        self.assertIn("structural compiler facade, analysis engine, canonical serialization utilities, and a thin CLI harness", text)
-        self.assertIn("proof system, authority module, runtime hook, governance surface", text)
+        self.assertIn("[`BOUNDARY.md`](BOUNDARY.md)", text)
+        self.assertIn("[`SPEC.md`](SPEC.md)", text)
 
 
 if __name__ == "__main__":
