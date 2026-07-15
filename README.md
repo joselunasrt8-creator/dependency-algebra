@@ -21,11 +21,11 @@ Deterministic Structural Analysis
 Structural Evidence
 ```
 
-SYNAPSE accepts declared topology, validates and normalizes it into a canonical structural representation, runs registered deterministic structural analyses, and emits reproducible structural results and evidence artifacts.
+SYNAPSE accepts declared topology, validates and normalizes it into a canonical structural representation, executes registered deterministic structural analyses, and emits reproducible structural results and evidence artifacts.
 
-Dependency Algebra is the current reference implementation and the first implemented structural analysis. It is not the complete identity of SYNAPSE.
+Dependency Algebra is the current reference implementation and the first implemented structural analysis. It demonstrates the framework without defining its complete identity.
 
-The implemented surface remains a structural compiler facade, analysis engine, canonical serialization utilities, and a thin CLI harness. It does not add a proof system, authority module, runtime hook, governance surface, or external mutation surface.
+The current implementation includes a structural compiler, analysis engine, canonical serialization utilities, public APIs, deterministic evidence artifacts, and a command-line interface.
 
 ---
 
@@ -237,17 +237,20 @@ The CLI determinism tests compile the same fixture repeatedly and compare byte-i
 
 ## Repository Boundary
 
-SYNAPSE performs structural analysis only.
+SYNAPSE is limited to deterministic structural analysis.
 
-It does not:
+It:
 
-- authorize actions
-- execute workflows
-- enforce runtime policy
-- mutate external systems
-- produce non-structural decisions
+- accepts declared topology
+- validates and normalizes structural input
+- constructs canonical structural representations
+- executes registered structural analyses
+- produces deterministic structural results
+- serializes structural evidence artifacts
 
-`VALID`, `DEGRADED`, and `NULL` are structural classifications only. They summarize deterministic structural analysis results and do not grant permission, trigger actions, or mutate any external system.
+Behavior outside structural analysis is outside the repository boundary.
+
+`VALID`, `DEGRADED`, and `NULL` are structural classifications only. They summarize deterministic analysis results and do not cause external actions or state changes.
 
 ---
 
