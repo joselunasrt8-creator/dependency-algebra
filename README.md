@@ -7,151 +7,175 @@
     width="100%">
 </p>
 
-## Structural Analysis Engine & Framework
+## Deterministic Structural Analysis Framework
 
-> From questions to trusted structural insight.
-
-SYNAPSE is a general-purpose structural analysis framework for transforming topology into deterministic structural insight through formal mathematical models, compiler architecture, and reusable analysis engines.
-
-The Dependency Algebra Compiler is the first structural compiler implemented within SYNAPSE and serves as the current reference implementation.
-
----
-
-## Normative Specification
-
-[`SPEC.md`](SPEC.md) is the authoritative entry point for frozen SYNAPSE contracts, current compiler-stage boundaries, versioning rules, and ecosystem handoffs. Start there for the normative answer to what SYNAPSE owns, what it does not own, and how structural evidence leaves the system.
-
-## Current Status
-
-SYNAPSE has reached the **architecture-closure compiler milestone** for its first reference implementation. The current implementation includes:
-
-- frozen schemas and fixtures
-- frontend validator and normalizer
-- canonical IR
-- immutable typed compiler artifacts
-- projection
-- reachability
-- predicate
-- classification
-- serialization boundary
-- deterministic hash receipts
-- thin CLI / argparse adapter
-- compatibility APIs
-
-The implemented surface remains a structural compiler facade, analysis engine, canonical serialization utilities, and a thin CLI harness. It does not add GitHub Actions, ContinuityOS integration, a proof system, authority module, runtime hook, governance surface, policy surface, or external-state mutation surface.
-
----
-
-## Vision
-
-SYNAPSE is the long-term framework for converting structured questions about systems into deterministic structural analysis.
+SYNAPSE is a standalone deterministic structural analysis framework:
 
 ```text
-Question
+Topology
     ↓
-Mathematical Model
+Canonical Structural Representation
     ↓
-Formal Specification
+Deterministic Structural Analysis
     ↓
-Compiler
-    ↓
-Structural Analysis Engine
-    ↓
-Applications
+Structural Evidence
 ```
 
-Dependency Algebra is the first implemented formalism within this framework. It defines the current reference path from topology contracts through structural compiler artifacts and deterministic analysis results.
+SYNAPSE accepts declared topology, validates and normalizes it into a canonical structural representation, runs registered deterministic structural analyses, and emits reproducible structural results and evidence artifacts.
+
+Dependency Algebra is the current reference implementation and the first implemented structural analysis. It is not the complete identity of SYNAPSE.
+
+The implemented surface remains a structural compiler facade, analysis engine, canonical serialization utilities, and a thin CLI harness. It does not add a proof system, authority module, runtime hook, governance surface, or external mutation surface.
 
 ---
 
-## Repository Boundary
+## What Problem Does Structural Analysis Solve?
 
-### This repository owns
+Structural analysis answers repeatable questions about declared system topology without relying on runtime state, timestamps, machine-local context, random identifiers, or external mutation. The current Dependency Algebra analysis asks whether removing a workload's candidate component set collapses directed reachability from workload roots to the target.
 
-- topology JSON contracts
-- mathematical definitions
-- parser / AST / IR contracts
-- reachability semantics
-- complement projection semantics
-- dependency predicate semantics
-- structural classification semantics
-- deterministic compiler artifact schemas
-- canonical fixtures
-- conformance tests
+The core implemented predicate is:
 
-### This repository does not own
+```text
+Dependency(S, W) ⇔ Reach(W | ¬S) = ∅
+```
 
-- ContinuityOS governance validation
-- execution eligibility
-- runtime authorization
-- proof generation
-- authority propagation
-- runtime policy
-- mutation execution
-- external-state mutation
+Where:
 
-`VALID`, `DEGRADED`, and `NULL` are **structural classifications only**. They are **not** governance decisions, execution authorizations, runtime proofs, or legitimacy results.
+- `W` is a workload with roots, target, candidate component set, and expected structural classification.
+- `S` is the workload candidate component set.
+- `¬S` is complement projection: remove each component in `S` and every incident edge.
+- `Reach(W)` is directed path existence from any workload root to the workload target.
+
+The result is structural evidence: deterministic facts about topology and analysis semantics.
+
+---
+
+## Inputs
+
+SYNAPSE currently accepts UTF-8 JSON topology documents constrained by [`schemas/topology.schema.json`](schemas/topology.schema.json). A topology document contains:
+
+- `schema_version`: currently `dependency-algebra.topology.v1`
+- `topology_id`: stable topology identifier
+- `components`: component identifiers plus optional `type` and string `labels`
+- `edges`: directed edges with stable identifiers, `from`, `to`, and optional string `labels`
+- `workloads`: workload identifiers, root components, target component, candidate component set, and expected structural classification
+
+Fixtures under [`fixtures/`](fixtures/) provide accepted, rejected, diagnostic, determinism, projection, reachability, dependency, and artifact examples.
+
+---
+
+## Validation and Normalization
+
+Validation is layered and fail-closed:
+
+1. Parse UTF-8 JSON source.
+2. Validate source shape and schema version.
+3. Construct source-faithful topology objects for diagnostics.
+4. Perform deterministic semantic validation, including duplicate identifiers and unresolved references.
+5. Normalize accepted input into canonical IR.
+
+Invalid input is rejected before analysis. Rejected input is not assigned a `VALID`, `DEGRADED`, or `NULL` structural classification.
+
+Canonical IR is defined by [`AST_IR_CONTRACT.md`](AST_IR_CONTRACT.md) and [`schemas/ir.schema.json`](schemas/ir.schema.json). Its identity is `normalized_ir_hash`, a SHA-256 digest over canonical UTF-8 JSON bytes with sorted object keys, compact separators, canonical set ordering, and no trailing newline.
+
+Diagnostic behavior is defined by [`COMPILER_FRONTEND_CONTRACT.md`](COMPILER_FRONTEND_CONTRACT.md), [`schemas/diagnostic.schema.json`](schemas/diagnostic.schema.json), and [`fixtures/diagnostics/`](fixtures/diagnostics/).
+
+---
+
+## Current Structural Analyses
+
+The currently implemented structural analysis is Dependency Algebra. It includes these deterministic passes:
+
+- complement projection over canonical IR
+- directed reachability from workload roots to workload target
+- dependency predicate evaluation over projected reachability
+- aggregate structural classification as `VALID`, `DEGRADED`, or `NULL`
+
+The implemented analysis is registered through the deterministic core analysis registry. Future analyses can fit SYNAPSE by registering additional deterministic analysis passes over canonical structural representation and emitting structural results with explicit contracts, schemas, fixtures, and tests.
+
+Unimplemented analyses are not currently available.
+
+---
+
+## Deterministic Artifacts
+
+SYNAPSE emits deterministic structural results and structural evidence artifacts.
+
+The CLI emits a structural evidence artifact constrained by [`schemas/artifact.schema.json`](schemas/artifact.schema.json). The current artifact includes:
+
+- artifact and source schema versions
+- compiler and package versions
+- `input_hash`
+- `normalized_ir_hash`
+- aggregate `classification`
+- `reachability_graph`
+- `dependency_lattice`
+- `failure_surface`
+- `redundancy_map`
+- `k_of_n_resilience_profile`
+- `annihilation_conditions`
+- diagnostics, warnings, and errors arrays
+- provenance with the implemented pipeline and analysis result hash
+- `artifact_hash`
+
+The compiler facade also exposes a deterministic hash receipt for callers that need receipt-shaped structural evidence rather than the full artifact.
+
+Structural results are analysis outputs such as reachability, dependency, and classification. Structural evidence artifacts are serialized, hash-addressed payloads that carry those results across the public boundary.
 
 ---
 
 ## Compiler Pipeline
 
-```text
-Raw Input
-    ↓
-Frontend Validation
-    ↓
-Canonical IR
-    ↓
-Projection
-    ↓
-Reachability
-    ↓
-Predicate
-    ↓
-AnalysisResult
-    ↓
-Serialization
-    ↓
-Hash Receipt
-    ↓
-CLI / Public API
-```
-
-Compiler stages exchange immutable typed artifacts. Serialization owns representation by converting typed artifacts into dictionaries and canonical JSON. Hashing owns artifact identity across serialized payload boundaries. Compatibility APIs cross the serialization boundary explicitly so public functions and CLI output remain dictionary- and JSON-shaped while the core compiler remains artifact-oriented.
-
----
-
-## Long-Term SYNAPSE Architecture
+The canonical SYNAPSE pipeline is:
 
 ```text
-Topology
-    ↓
-Structural Compiler
-    ↓
-Structural Analysis Engine
-    ↓
-Visualization
-    ↓
-Optimization
-    ↓
-Simulation
+Source Topology
+        ↓
+Validation
+        ↓
+Canonical Structural Representation
+        ↓
+Registered Structural Analysis
+        ↓
+Deterministic Structural Result
+        ↓
+Structural Evidence Artifact
 ```
 
-The current repository implements the compiler layer of this architecture. Visualization, optimization, simulation, runtime policy, authority propagation, and external-state mutation remain outside this repository boundary.
+The current implementation maps that architecture to these concrete stages:
+
+```text
+Source topology
+  → parse_topology
+  → validate_and_normalize
+  → canonical IR
+  → registered Dependency Algebra analysis
+  → projection, reachability, dependency predicate, classification
+  → AnalysisResult
+  → serialization
+  → artifact or hash receipt
+  → CLI / public API consumer
+```
+
+Compiler stages exchange immutable typed artifacts. Serialization owns dictionary conversion and canonical JSON. Hashing owns artifact identity across serialized payload boundaries. Compatibility APIs cross the serialization boundary explicitly so public functions and CLI output remain dictionary- and JSON-shaped while the core compiler remains artifact-oriented.
 
 ---
-
 
 ## SYNAPSE CLI
 
-Issue #57 owns the active CLI implementation surface. The stable command shape is:
+The stable command shape is:
 
 ```bash
 python -m dependency_algebra.cli compile --input fixtures/basic.json --output out/artifact.json
 ```
 
-The command is exposed with `prog` name `synapse`; packaging a console script named `synapse` is intentionally deferred to the distribution and release issue. The CLI compiles canonical topology JSON into the deterministic structural evidence artifact and writes no success output to stdout or stderr. Diagnostics are canonical machine-readable JSON on stderr.
+The package also installs a `synapse` console script when installed from [`pyproject.toml`](pyproject.toml):
+
+```bash
+synapse compile --input fixtures/basic.json --output out/artifact.json
+```
+
+The CLI compiles canonical topology JSON into a deterministic structural evidence artifact. On success, it writes the artifact to `--output` and writes no success output to stdout or stderr. Diagnostics are canonical machine-readable JSON on stderr.
 
 Stable exit codes:
 
@@ -163,48 +187,90 @@ Stable exit codes:
 | 3 | Artifact emission failure |
 | 4 | Unexpected runtime failure |
 
-The CLI never mutates input files and does not perform cross-repository conformance, packaging, release, publishing, or GitHub Action integration.
+The CLI never mutates input files.
 
-## Validation
+---
 
-Validation is intentionally layered:
+## Determinism Validation
 
-- JSON Schema structural validation
-- deterministic semantic validation
-- conformance suite
+Determinism is defined by [`DETERMINISM.md`](DETERMINISM.md). SYNAPSE determinism requires:
 
-Run the conformance suite:
+- canonical object ordering
+- canonical UTF-8 JSON bytes
+- SHA-256 hash boundaries
+- no wall-clock timestamps in compiler artifacts
+- no random identifiers in compiler artifacts
+- no machine-local absolute paths in compiler artifacts
+- no environment-derived values in compiler artifacts
+- deterministic diagnostic ordering
+- byte-identical replay for the same accepted input
+
+Run the conformance and regression suite:
 
 ```bash
 python -m unittest discover -s tests -p '*_tests.py'
 ```
 
+The CLI determinism tests compile the same fixture repeatedly and compare byte-identical artifact output.
+
 ---
 
-## Contracts
+## Normative Contracts
 
-All contracts are structural-analysis contracts only. They do not introduce governance, proof, authority, execution, policy, runtime, or mutation behavior.
+[`SPEC.md`](SPEC.md) is the authoritative repository-level index for SYNAPSE contracts. The current normative contract set includes:
 
-### `AST_IR_CONTRACT.md`
+| Contract area | Canonical source |
+| --- | --- |
+| Repository ownership and exclusions | [`BOUNDARY.md`](BOUNDARY.md) |
+| Topology source schema | [`schemas/topology.schema.json`](schemas/topology.schema.json) |
+| AST and canonical IR | [`AST_IR_CONTRACT.md`](AST_IR_CONTRACT.md), [`schemas/ast.schema.json`](schemas/ast.schema.json), [`schemas/ir.schema.json`](schemas/ir.schema.json) |
+| Frontend parse, validation, normalization, diagnostics | [`COMPILER_FRONTEND_CONTRACT.md`](COMPILER_FRONTEND_CONTRACT.md), [`schemas/diagnostic.schema.json`](schemas/diagnostic.schema.json), [`fixtures/diagnostics/`](fixtures/diagnostics/) |
+| Complement projection | [`COMPLEMENT_PROJECTION_CONTRACT.md`](COMPLEMENT_PROJECTION_CONTRACT.md), [`schemas/projection.schema.json`](schemas/projection.schema.json), [`fixtures/projection/`](fixtures/projection/) |
+| Reachability | [`REACHABILITY_CONTRACT.md`](REACHABILITY_CONTRACT.md), [`schemas/reachability.schema.json`](schemas/reachability.schema.json), [`fixtures/reachability/`](fixtures/reachability/) |
+| Dependency predicate | [`DEPENDENCY_PREDICATE_CONTRACT.md`](DEPENDENCY_PREDICATE_CONTRACT.md), [`schemas/dependency.schema.json`](schemas/dependency.schema.json), [`fixtures/dependency/`](fixtures/dependency/) |
+| Classification | [`schemas/classification.schema.json`](schemas/classification.schema.json), [`fixtures/valid/`](fixtures/valid/), [`fixtures/degraded/`](fixtures/degraded/), [`fixtures/null/`](fixtures/null/) |
+| Artifact and receipt evidence | [`schemas/artifact.schema.json`](schemas/artifact.schema.json), [`schemas/structural-evidence.schema.json`](schemas/structural-evidence.schema.json), [`DETERMINISM.md`](DETERMINISM.md) |
+| Fixture catalog | [`FIXTURES.md`](FIXTURES.md) |
+| Architecture closure | [`ARCHITECTURE_CLOSURE_REPORT.md`](ARCHITECTURE_CLOSURE_REPORT.md) |
 
-- **Purpose:** Defines the compiler architecture boundary between source topology and normalized analysis representation.
-- **Boundary:** AST remains source-faithful and diagnostic-oriented; IR is canonical, normalized, and analysis-ready. Normalized IR equality is based on canonical UTF-8 JSON bytes with sorted object keys, compact separators, canonical set ordering, and no trailing newline. `normalized_ir_hash` is SHA-256 over that canonical normalized IR hash payload.
-- **Current status:** Frozen planning contract from Issue #10.
+---
 
-### `REACHABILITY_CONTRACT.md`
+## Repository Boundary
 
-- **Purpose:** Defines canonical `Reach(W)` semantics.
-- **Boundary:** Reachability is a per-workload, directed-edge, path-existence contract over normalized IR. It defines deterministic multi-root handling, unreachable results, cycle termination, self-loop handling, disconnected-component behavior, result shape, ordering, and hash boundaries.
-- **Current status:** Frozen planning contract from Issue #11.
+SYNAPSE performs structural analysis only.
 
-### `COMPILER_FRONTEND_CONTRACT.md`
+It does not:
 
-- **Purpose:** Closes pre-implementation frontend planning gaps.
-- **Boundary:** Defines parser diagnostic taxonomy, AST construction rules, normalization design rules, diagnostic ordering, diagnostic schema boundaries, and diagnostics-only conformance vectors.
-- **Current status:** Contract-only frontend specification.
+- authorize actions
+- execute workflows
+- enforce runtime policy
+- mutate external systems
+- produce non-structural decisions
 
-### `COMPLEMENT_PROJECTION_CONTRACT.md`
+`VALID`, `DEGRADED`, and `NULL` are structural classifications only. They summarize deterministic structural analysis results and do not grant permission, trigger actions, or mutate any external system.
 
-- **Purpose:** Defines canonical `¬S` complement projection semantics.
-- **Boundary:** Complement projection is a deterministic, structural-only transformation from normalized IR plus a component candidate set to projected normalized IR. It removes candidate components and incident edges, preserves unaffected graph structure and workload definitions, defines `projected_ir_hash`, and emits structural diagnostics only.
-- **Current status:** Frozen planning contract from Issue #12.
+---
+
+## Future Structural Analyses
+
+Future structural analyses may be added as additional deterministic analysis passes over the canonical structural representation. A future analysis should define:
+
+- the structural question it answers
+- the canonical input object it consumes
+- deterministic semantics and ordering rules
+- result and evidence artifact fields
+- schema and fixture coverage
+- conformance tests
+- hash boundaries, if the result crosses a serialized evidence boundary
+
+Future analyses must preserve the same top-level SYNAPSE identity:
+
+```text
+Topology
+    ↓
+Canonical Structural Representation
+    ↓
+Deterministic Structural Analysis
+    ↓
+Structural Evidence
+```
