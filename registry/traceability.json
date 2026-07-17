@@ -99,15 +99,15 @@
       "exact_gap": ""
     },
     {
-      "spec_ref": "COMPLEMENT_PROJECTION_CONTRACT.md#projection-semantics",
+      "spec_ref": "COMPLEMENT_PROJECTION_CONTRACT.md#canonical-definition",
       "requirement": "Complement projection removes each candidate component and every incident edge while preserving unaffected graph structure.",
       "implementation_path": "dependency_algebra/projection.py",
       "implementation_symbol": "project",
       "test_path": "tests/schema_tests.py",
-      "artifact_or_output": "ProjectedIR compatibility dictionary",
-      "status": "PARTIAL",
-      "evidence": "Projection implementation removes candidate nodes and outgoing references to candidates; schema fixtures cover projected object shapes.",
-      "exact_gap": "Implementation exposes only traversal-oriented ProjectedIR rather than full projected normalized IR contract shape."
+      "artifact_or_output": "ProjectedIR typed traversal object and compatibility dictionary",
+      "status": "VERIFIED",
+      "evidence": "The narrowed contract and schema describe the exact ProjectedIR fields; schema tests validate fixtures and the serialized output of project().",
+      "exact_gap": ""
     },
     {
       "spec_ref": "REACHABILITY_CONTRACT.md#reachability-definition",

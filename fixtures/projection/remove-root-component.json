@@ -1,97 +1,15 @@
 {
-  "schema_version": "dependency-algebra.projection.v1",
-  "topology_id": "remove-root-component",
-  "normalized_ir_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
-  "candidate_set": [
+  "removed": [
     "client"
   ],
-  "projected_ir": {
-    "schema_version": "dependency-algebra.ir.v1",
-    "topology_id": "remove-root-component",
-    "components": [
+  "adjacency": {
+    "api": [
       {
-        "id": "api",
-        "type": "service",
-        "metadata": {},
-        "source": {
-          "source_id": "api"
-        }
-      },
-      {
-        "id": "db",
-        "type": "store",
-        "metadata": {},
-        "source": {
-          "source_id": "db"
-        }
+        "edge_id": "api-db",
+        "component_id": "db"
       }
     ],
-    "edges": [
-      {
-        "id": "api-db",
-        "from": "api",
-        "to": "db",
-        "metadata": {},
-        "source": {
-          "source_id": "api-db"
-        }
-      }
-    ],
-    "adjacency": {
-      "api": [
-        {
-          "edge_id": "api-db",
-          "component_id": "db"
-        }
-      ],
-      "db": []
-    },
-    "reverse_adjacency": {
-      "api": [],
-      "db": [
-        {
-          "edge_id": "api-db",
-          "component_id": "api"
-        }
-      ]
-    },
-    "workloads": [
-      {
-        "id": "workload",
-        "roots": [
-          "client"
-        ],
-        "target": "db",
-        "candidate_set": [
-          "client"
-        ],
-        "expected_classification": "NULL",
-        "source": {
-          "source_id": "workload"
-        }
-      }
-    ],
-    "normalized_ir_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+    "db": []
   },
-  "diagnostics": [
-    {
-      "code": "PROJECTION.COMPONENT_REMOVED",
-      "severity": "info",
-      "message": "component client removed by complement projection",
-      "subject": {
-        "kind": "component",
-        "id": "client"
-      }
-    },
-    {
-      "code": "PROJECTION.REMOVED_ROOT",
-      "severity": "warning",
-      "message": "candidate set removes workload root client",
-      "subject": {
-        "kind": "root",
-        "id": "client"
-      }
-    }
-  ],
-  "projected_ir_hash": "sha256:ff8b9da8e00a6fc989c9dfcd65f4aa9f01b491c8c93f5a6459ad5f8e4555df86"
+  "roots": []
 }

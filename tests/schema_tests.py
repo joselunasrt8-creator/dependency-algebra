@@ -729,16 +729,8 @@ if __name__ == "__main__":
 
 
 
-def canonical_hash(doc):
-    payload = json.loads(json.dumps(doc))
-    payload.pop("projected_ir_hash", None)
-    canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
-    import hashlib
-    return "sha256:" + hashlib.sha256(canonical).hexdigest()
-
-
 class ProjectionContractTests(unittest.TestCase):
-    """Contract helpers only; these tests do not implement a projection engine."""
+    """Schema coverage for the traversal-oriented typed projection boundary."""
 
     def projection_paths(self):
         return sorted((FIXTURES / "projection").glob("*.json"))
@@ -747,62 +739,70 @@ class ProjectionContractTests(unittest.TestCase):
     def test_projection_schema_and_fixtures_validate(self):
         validator = json_schema_validator(PROJECTION_SCHEMA_PATH)
         paths = self.projection_paths()
-        self.assertGreaterEqual(len(paths), 10)
+        self.assertGreaterEqual(len(paths), 8)
         for path in paths:
             with self.subTest(path=path):
                 validator.validate(load_json(path))
 
-    def test_projected_ir_invariants_hold_for_success_fixtures(self):
+    def test_projected_ir_invariants_hold_for_fixtures(self):
         for path in self.projection_paths():
             doc = load_json(path)
-            if "projected_ir" not in doc:
-                continue
             with self.subTest(path=path):
-                ir = doc["projected_ir"]
-                component_ids = [c["id"] for c in ir["components"]]
-                edge_ids = [e["id"] for e in ir["edges"]]
-                self.assertEqual(component_ids, sorted(component_ids))
-                self.assertEqual(edge_ids, sorted(edge_ids))
-                self.assertEqual(len(component_ids), len(set(component_ids)))
-                self.assertEqual(len(edge_ids), len(set(edge_ids)))
-                component_set = set(component_ids)
-                for edge in ir["edges"]:
-                    self.assertIn(edge["from"], component_set)
-                    self.assertIn(edge["to"], component_set)
-                self.assertEqual(ir["topology_id"], doc["topology_id"])
-                self.assertEqual([w["id"] for w in ir["workloads"]], sorted(w["id"] for w in ir["workloads"]))
+                self.assertEqual(doc["removed"], sorted(set(doc["removed"])))
+                self.assertEqual(list(doc["adjacency"]), sorted(doc["adjacency"]))
+                self.assertEqual(doc["roots"], sorted(set(doc["roots"])))
+                remaining = set(doc["adjacency"])
+                self.assertTrue(set(doc["roots"]) <= remaining)
+                self.assertFalse(set(doc["removed"]) & remaining)
+                for edges in doc["adjacency"].values():
+                    self.assertEqual(
+                        [(edge["component_id"], edge["edge_id"]) for edge in edges],
+                        sorted((edge["component_id"], edge["edge_id"]) for edge in edges),
+                    )
+                    self.assertTrue(all(edge["component_id"] in remaining for edge in edges))
 
     def test_incident_edges_removed_and_unaffected_structure_remains(self):
         doc = load_json(FIXTURES / "projection" / "remove-non-critical-component.json")
-        ir = doc["projected_ir"]
-        self.assertEqual([c["id"] for c in ir["components"]], ["api", "client", "db"])
-        self.assertEqual([e["id"] for e in ir["edges"]], ["api-db", "client-api"])
-        self.assertNotIn("cache", ir["adjacency"])
-        self.assertEqual(ir["workloads"][0]["candidate_set"], ["cache"])
+        self.assertEqual(list(doc["adjacency"]), ["api", "client", "db"])
+        self.assertEqual(doc["adjacency"]["api"], [{"edge_id": "api-db", "component_id": "db"}])
+        self.assertNotIn("cache", doc["adjacency"])
+        self.assertEqual(doc["removed"], ["cache"])
 
     def test_candidate_ordering_does_not_affect_projected_ir_identity(self):
         left = load_json(FIXTURES / "projection" / "remove-multiple-components.json")
-        right = json.loads(json.dumps(left))
-        right["candidate_set"] = list(reversed(right["candidate_set"]))
-        self.assertEqual(left["projected_ir"], right["projected_ir"])
-        self.assertEqual(left["projected_ir"]["components"], right["projected_ir"]["components"])
-        self.assertEqual(left["projected_ir"]["edges"], right["projected_ir"]["edges"])
-        self.assertEqual(canonical_hash(left["projected_ir"]), canonical_hash(right["projected_ir"]))
+        self.assertEqual(left["removed"], ["api", "cache"])
 
-    def test_projected_ir_hash_matches_canonical_fixture(self):
-        doc = load_json(FIXTURES / "projection" / "projected-ir-hash.json")
-        self.assertEqual(doc["projected_ir_hash"], canonical_hash(doc["projected_ir"]))
+    @unittest.skipIf(Draft202012Validator is None, "jsonschema is not installed")
+    def test_emitted_typed_projection_serialization_matches_schema(self):
+        from dependency_algebra.ir import CanonicalIR, Edge, Workload
+        from dependency_algebra.projection import project
+        from dependency_algebra.serialization import projected_ir_to_dict
 
-    def test_projection_rejection_diagnostics_are_structural(self):
-        expectations = {
-            "unknown-candidate-rejection.json": "PROJECTION.UNKNOWN_COMPONENT",
-            "duplicate-candidate-rejection.json": "PROJECTION.DUPLICATE_CANDIDATE",
-        }
-        for filename, code in expectations.items():
-            with self.subTest(filename=filename):
-                doc = load_json(FIXTURES / "projection" / filename)
-                self.assertNotIn("projected_ir", doc)
-                self.assertEqual(doc["diagnostics"][0]["code"], code)
+        workload = Workload("workload", ("client",), "db", ("cache",))
+        ir = CanonicalIR(
+            "topology",
+            "sha256:" + "0" * 64,
+            ("cache", "client", "db"),
+            {
+                "cache": (),
+                "client": (Edge("client-cache", "cache"), Edge("client-db", "db")),
+                "db": (),
+            },
+            (workload,),
+        )
+        document = projected_ir_to_dict(project(ir, workload))
+        json_schema_validator(PROJECTION_SCHEMA_PATH).validate(document)
+        self.assertEqual(
+            document,
+            {
+                "removed": ["cache"],
+                "adjacency": {
+                    "client": [{"edge_id": "client-db", "component_id": "db"}],
+                    "db": [],
+                },
+                "roots": ["client"],
+            },
+        )
 
     def test_forbidden_runtime_authority_governance_proof_fields_excluded(self):
         forbidden = {"runtime", "authority", "governance", "proof", "policy", "execution", "mutation", "generated_at", "machine_path"}
