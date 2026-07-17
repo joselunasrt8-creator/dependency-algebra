@@ -1,3 +1,4 @@
+import fnmatch
 import json
 import tempfile
 import unittest
@@ -6,6 +7,7 @@ from pathlib import Path
 from scripts.check_traceability import DEFAULT_MANIFEST, validate_manifest
 
 ROOT = Path(__file__).resolve().parents[1]
+CANONICAL_TEST_COMMAND = "python -m pytest tests"
 
 
 class TraceabilityManifestTests(unittest.TestCase):
@@ -45,9 +47,36 @@ class TraceabilityManifestTests(unittest.TestCase):
             errors, _ = validate_manifest(path)
         self.assertTrue(any("test_path does not exist" in error for error in errors))
 
-    def test_pytest_configuration_collects_traceability_tests(self):
+    def test_canonical_ci_suite_collects_every_test_module(self):
         pytest_ini = (ROOT / "pytest.ini").read_text(encoding="utf-8")
-        self.assertIn("python_files = *_tests.py", pytest_ini)
+        pattern_line = next(
+            line for line in pytest_ini.splitlines() if line.startswith("python_files = ")
+        )
+        patterns = pattern_line.removeprefix("python_files = ").split()
+        test_modules = sorted(
+            path.name
+            for path in (ROOT / "tests").glob("*.py")
+            if path.name != "__init__.py"
+        )
+
+        self.assertGreater(len(test_modules), 0)
+        self.assertEqual(
+            [
+                module
+                for module in test_modules
+                if not any(fnmatch.fnmatchcase(module, pattern) for pattern in patterns)
+            ],
+            [],
+        )
+        self.assertIn("test_representation_invariance.py", test_modules)
+
+        workflows = [
+            ROOT / ".github" / "workflows" / "test.yml",
+            ROOT / ".github" / "workflows" / "package.yml",
+        ]
+        for workflow in workflows:
+            with self.subTest(workflow=workflow.name):
+                self.assertIn(CANONICAL_TEST_COMMAND, workflow.read_text(encoding="utf-8"))
 
     def test_ci_runs_traceability_validation(self):
         workflows = [
