@@ -1,89 +1,14 @@
 {
-  "schema_version": "dependency-algebra.projection.v1",
-  "topology_id": "remove-multiple-components",
-  "normalized_ir_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
-  "candidate_set": [
+  "removed": [
     "api",
     "cache"
   ],
-  "projected_ir": {
-    "schema_version": "dependency-algebra.ir.v1",
-    "topology_id": "remove-multiple-components",
-    "components": [
-      {
-        "id": "client",
-        "type": "entry",
-        "metadata": {},
-        "source": {
-          "source_id": "client"
-        }
-      },
-      {
-        "id": "db",
-        "type": "store",
-        "metadata": {},
-        "source": {
-          "source_id": "db"
-        }
-      },
-      {
-        "id": "worker",
-        "type": "service",
-        "metadata": {},
-        "source": {
-          "source_id": "worker"
-        }
-      }
-    ],
-    "edges": [],
-    "adjacency": {
-      "client": [],
-      "db": [],
-      "worker": []
-    },
-    "reverse_adjacency": {
-      "client": [],
-      "db": [],
-      "worker": []
-    },
-    "workloads": [
-      {
-        "id": "workload",
-        "roots": [
-          "client"
-        ],
-        "target": "db",
-        "candidate_set": [
-          "api",
-          "cache"
-        ],
-        "expected_classification": "NULL",
-        "source": {
-          "source_id": "workload"
-        }
-      }
-    ],
-    "normalized_ir_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+  "adjacency": {
+    "client": [],
+    "db": [],
+    "worker": []
   },
-  "diagnostics": [
-    {
-      "code": "PROJECTION.COMPONENT_REMOVED",
-      "severity": "info",
-      "message": "component api removed by complement projection",
-      "subject": {
-        "kind": "component",
-        "id": "api"
-      }
-    },
-    {
-      "code": "PROJECTION.COMPONENT_REMOVED",
-      "severity": "info",
-      "message": "component cache removed by complement projection",
-      "subject": {
-        "kind": "component",
-        "id": "cache"
-      }
-    }
-  ],
-  "projected_ir_hash": "sha256:5f97026e78caf661ce1316c89fc40f4a381e1180841f47d064fa8e468f22165e"
+  "roots": [
+    "client"
+  ]
 }

@@ -1,135 +1,72 @@
 # Complement Projection Contract
 
-## Executive assessment
+## Status and scope
 
-Complement projection freezes the structural meaning of `¬S` for Dependency Algebra v1. It is a deterministic transformation from normalized IR plus a candidate component set to a projected normalized IR with the candidate components and every incident edge removed. The contract is planning-only: it defines semantics, invariants, diagnostics, equality, and hash boundaries without adding an engine or any runtime surface.
+This contract defines the deliberately narrow, traversal-oriented complement projection emitted by `dependency_algebra.projection.project`. It is not a projected normalized IR document and must not be interpreted as one. The normalized `CanonicalIR` remains the source of topology identity, component records, workload definitions, reverse adjacency, and lineage.
 
-## Intent, scope, and preserved invariants
+The typed result and its compatibility serialization contain exactly three fields:
 
-- Intent: define the canonical structural transformation consumed by later dependency predicate evaluation.
-- Exact scope: contract documentation, projection result schema, canonical projection fixtures, and schema/contract tests.
-- Affected surfaces: `COMPLEMENT_PROJECTION_CONTRACT.md`, `schemas/projection.schema.json`, `fixtures/projection/`, documentation indexes, and schema tests.
-- Preserved invariants: source topology, AST, source normalized IR, workload identifiers, workload definitions, graph direction, identifier spelling, and canonical ordering remain stable.
-- Mutation-capable surfaces introduced: none. Fixtures and tests are static contract artifacts only.
-- Replay implications: identical normalized IR and equivalent candidate sets must produce byte-identical projected IR and `projected_ir_hash`.
-- Proof requirements: schema validation, invariant checks, deterministic ordering checks, canonical hash checks, and forbidden-field checks.
-- Unresolved ambiguity: deferred questions are listed explicitly below rather than silently implemented.
+- `removed`: the candidate component identifiers;
+- `adjacency`: outgoing adjacency for every remaining component, with edges to removed components omitted;
+- `roots`: workload roots that remain after removal.
+
+`schemas/projection.schema.json` describes the dictionary returned by the existing `complement_projection` compatibility wrapper. It does not describe a diagnostic envelope or a standalone compiler artifact.
 
 ## Canonical definition
 
 ```text
-Normalized IR + candidate component set S
+CanonicalIR + one normalized Workload
         ↓
-Remove every component in S
+Treat workload.candidate_set as the removal set
         ↓
-Remove every edge incident to any removed component
+Omit removed adjacency keys and edges whose target is removed
         ↓
-Rebuild canonical structural tables for the remaining graph
+Omit removed roots
         ↓
-Projected normalized IR
+ProjectedIR(removed, adjacency, roots)
 ```
 
-`¬S` is defined only over normalized IR in v1. Projection does not parse topology JSON, construct AST, normalize IR, evaluate reachability, classify dependency, compute resilience, emit compiler artifacts, invoke governance, or mutate external state.
+Because `CanonicalIR` adjacency stores outgoing edges under their source component, omitting removed source keys and edges whose target is removed eliminates every incident edge.
 
-## Projection semantics
+## Preconditions
 
-1. Input IR must already satisfy the normalized IR contract.
-2. `candidate_set` contains component identifiers only in v1.
-3. Candidate identifiers are canonicalized for projection context by lexicographic ordering and duplicate detection.
-4. Unknown candidates are rejected with `PROJECTION.UNKNOWN_COMPONENT` and no projected IR is required.
-5. Empty candidate sets remain invalid in v1 and produce `PROJECTION.EMPTY_CANDIDATE_SET`.
-6. Duplicate candidates are rejected with `PROJECTION.DUPLICATE_CANDIDATE` before removal.
-7. For every candidate component, projection removes that component and all incident incoming, outgoing, and self-loop edges.
-8. Projection preserves all non-removed components and all edges whose endpoints both remain.
-9. Projection preserves workload objects unchanged, including roots, target, `candidate_set`, source lineage, metadata, and expected classification.
-10. Projection diagnostics are structural context only and do not affect reachability or classification.
+Projection operates only on a validated, normalized `CanonicalIR` and one of its normalized workloads. Unknown candidates, duplicate candidates, empty candidate sets, unresolved endpoints, and noncanonical input ordering are frontend validation concerns and are outside this typed result. Projection therefore emits no diagnostics and has no unsuccessful result variant.
 
-## Component-removal rules
+## Result invariants
 
-- Isolated component: remove the component; no edges are removed.
-- Source/root component: remove normally and emit `PROJECTION.REMOVED_ROOT`; workload roots are not rewritten.
-- Target component: remove normally and emit `PROJECTION.REMOVED_TARGET`; workload target is not rewritten.
-- Cycle participant: remove normally; every incident cycle edge is removed; remaining cycle fragments are preserved.
-- Self-loop component: remove the component and the self-loop edge.
-- Bridge component: remove normally; projection does not classify bridge impact.
-- Multiple components: canonicalize candidates lexicographically, then remove as one set; candidate order never changes projected IR identity.
-- Empty candidate set: invalid in v1; no successful projected IR is defined.
+A successful `ProjectedIR` guarantees:
 
-## Edge-removal rules
+1. `removed` is immutable in the typed object and contains the workload candidate set.
+2. No removed identifier is an adjacency key, edge target, or remaining root.
+3. Every remaining canonical component has exactly one adjacency key, including components with no outgoing edges.
+4. Adjacency edges retain their normalized edge identifiers and targets.
+5. The source `CanonicalIR` and `Workload` are not mutated.
+6. No topology identity, normalized IR hash, component record, edge table, reverse adjacency, workload record, diagnostic, projected hash, runtime, authority, governance, proof, policy, execution, mutation, timestamp, machine path, random identifier, or environment-derived field is added.
 
-An edge is removed if and only if `edge.from` or `edge.to` is in the canonical candidate set. Removed edge identifiers are not retained in projected IR. They may appear only in diagnostics if a future diagnostic code explicitly requires edge subjects; v1 does not require a removed-edge list.
+The result is sufficient for deterministic reachability traversal. Consumers needing the full normalized model retain the source `CanonicalIR`; projection does not duplicate it.
 
-## Workload preservation rules
+## Deterministic ordering and equality
 
-Workloads are analysis context, not projection mutation targets. Projection never removes, renumbers, rewrites, or deduplicates workload roots, targets, candidate sets, expected classifications, metadata, or source lineage. Removed components may therefore still appear inside workload definitions after projection as unchanged references; those references are not graph endpoints and are interpreted by downstream passes in context.
+The frontend canonicalizes components, adjacency entries, roots, and candidate sets before projection. `project` preserves component/adjacency iteration order and root order while filtering. The serialization boundary sorts `removed` before converting its `frozenset` representation to JSON. Canonical JSON serialization sorts object keys, so equivalent normalized inputs produce byte-identical compatibility dictionaries and canonical JSON.
 
-## Projected IR invariants
+Two traversal projections are equivalent when their `removed`, `adjacency`, and `roots` values are equal. Candidate input order has no identity significance because the typed removal boundary is a set and compatibility serialization is sorted.
 
-Projected IR must guarantee:
+## Compatibility serialization
 
-- remaining component identifiers are unique;
-- remaining edge identifiers are unique;
-- every remaining edge endpoint resolves to a remaining component;
-- workload identifiers and definitions are unchanged;
-- topology identity is unchanged;
-- graph direction is unchanged;
-- component, edge, adjacency, reverse adjacency, and workload ordering is canonical;
-- no dangling edges remain;
-- no unresolved remaining graph references remain;
-- no runtime, authority, governance, proof, policy, execution, mutation, timestamp, machine-path, random-ID, or environment-derived field is present.
+`dependency_algebra.serialization.projected_ir_to_dict` is the sole dictionary representation owner. For backward compatibility, `complement_projection` continues returning:
 
-## Deterministic ordering
+```json
+{
+  "removed": ["candidate"],
+  "adjacency": {
+    "remaining-component": []
+  },
+  "roots": ["remaining-root"]
+}
+```
 
-Projection emits arrays in normalized IR order: components by component id, edges by edge id, workloads by workload id, candidate sets by component id when represented as projection context, and adjacency entries by adjacent component id then edge id. Object keys are serialized canonically for hashing.
-
-## Projection equality semantics
-
-Equivalent normalized IR plus equivalent candidate set must produce equivalent projected IR. Candidate sets are equivalent after canonical ordering; input candidate ordering differences must not affect projected IR identity. Diagnostics may differ only when input candidate representation differs in ways that are invalid, such as duplicates.
-
-## `projected_ir_hash`
-
-`projected_ir_hash = SHA-256(canonical UTF-8 JSON(projected_ir without projected_ir_hash))`.
-
-Canonical serialization uses sorted object keys, canonical set ordering, compact separators, UTF-8, no trailing newline, and excludes timestamps, machine paths, random IDs, runtime fields, authority fields, governance fields, proof fields, policy fields, execution fields, mutation fields, and diagnostics. Diagnostics are hash-excluded because they describe projection context, not the projected graph identity.
-
-## Diagnostics taxonomy
-
-Diagnostics are deterministic and structural only:
-
-| Code | Severity | Meaning | Hash boundary |
-| --- | --- | --- | --- |
-| `PROJECTION.UNKNOWN_COMPONENT` | error | Candidate does not resolve to an IR component. | Excluded |
-| `PROJECTION.EMPTY_CANDIDATE_SET` | error | Candidate set is empty, invalid in v1. | Excluded |
-| `PROJECTION.DUPLICATE_CANDIDATE` | error | Candidate appears more than once. | Excluded |
-| `PROJECTION.REMOVED_ROOT` | warning | Removed component is a workload root. | Excluded |
-| `PROJECTION.REMOVED_TARGET` | warning | Removed component is a workload target. | Excluded |
-| `PROJECTION.COMPONENT_REMOVED` | info | Component was removed by projection. | Excluded |
-
-Informational diagnostics are allowed when they remain deterministic and structural.
-
-## Explicit questions resolved
-
-1. Projection is defined only over normalized IR in v1.
-2. Candidate sets are component-only in v1.
-3. Removed components may appear only in preserved workload definitions and diagnostics, never as remaining components or edge endpoints.
-4. Removed edge IDs are not retained in projected IR.
-5. Projection preserves workload metadata and definitions unchanged.
-6. Projection may emit deterministic informational diagnostics.
-7. Removed roots are removed normally plus a structural warning.
-8. Removed targets are removed normally plus a structural warning.
-9. Multiple removals are canonicalized lexicographically and applied as a set.
-10. `projected_ir_hash` covers projected IR structural fields excluding `projected_ir_hash` itself and diagnostics.
-11. All projection diagnostics are hash-excluded.
-12. Projected IR uses normalized IR arrays plus adjacency maps, matching the IR contract.
-
-## Deferred questions
-
-- Edge, group, or predicate-based candidate sets are deferred.
-- Empty candidate set semantics beyond invalid-v1 diagnostics are deferred.
-- Whether future artifacts include removed-component or removed-edge audit tables is deferred.
-- Dependency predicate truth tables and classifications are deferred.
-- Any compiler API, CLI, runtime integration, or ContinuityOS integration is deferred.
+No `schema_version` is added: doing so would change the established wrapper shape. `projected_ir_identity_hash` remains a separate predicate identity helper over the normalized IR hash and removed candidate tuple; it is not a hash of this traversal dictionary and is not part of `ProjectedIR`.
 
 ## Boundary confirmation
 
-Complement projection remains structural analysis only. This contract introduces no parser, AST implementation, IR implementation, projection engine, reachability engine, dependency predicate evaluator, artifact emitter, CLI, GitHub Action consumer, ContinuityOS integration, runtime, authority, proof, policy, governance, execution, or external-state mutation surface.
+Projection is an internal structural transition between normalized IR and reachability. It does not parse, normalize, classify, serialize within the core `project` function, emit diagnostics or artifacts, invoke governance, or mutate external state. A future full projected-normalized-IR artifact would require a separate type, schema, serializer, hash definition, and versioned contract rather than silently widening `ProjectedIR`.
