@@ -210,7 +210,7 @@ Determinism is defined by [`DETERMINISM.md`](DETERMINISM.md). SYNAPSE determinis
 Run the conformance and regression suite:
 
 ```bash
-python -m unittest discover -s tests -p '*_tests.py'
+python -m pytest tests
 ```
 
 The CLI determinism tests compile the same fixture repeatedly and compare byte-identical artifact output.
